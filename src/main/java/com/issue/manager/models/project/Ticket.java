@@ -25,7 +25,7 @@ public class Ticket extends Entity {
     private String creator; // User reference
     private String description;
     private List<String> ticketReferences; // Ticket reference
-    private List<TicketStatus> statuses;
+    private List<String> statuses;
     private List<String> comments; // Comment references
     private List<String> mentionedInCommits; // Commit references
 
