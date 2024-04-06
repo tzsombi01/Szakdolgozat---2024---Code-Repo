@@ -21,6 +21,7 @@ public class Discussion extends Entity {
     public static final String DISCUSSION_COLLECTION_NAME = "discussions";
 
     private String creator; // Reference to User
+    private String name;
     private List<String> comments;
     private String description;
 }

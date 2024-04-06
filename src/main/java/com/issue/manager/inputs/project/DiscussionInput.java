@@ -13,12 +13,14 @@ import java.util.List;
 public class DiscussionInput extends ModelInput<Discussion> {
 
     private String creator; // Reference to User
+    private String name;
     private List<String> comments;
     private String description;
 
     @Override
     public Discussion toModel(Discussion model) {
         model.setCreator(creator);
+        model.setName(name);
         model.setDescription(description);
         model.setComments(comments);
 

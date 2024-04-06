@@ -1,4 +1,4 @@
-package com.issue.manager.inputs.project;
+package com.issue.manager.models.project;
 
 import com.issue.manager.models.Entity;
 import lombok.AllArgsConstructor;
@@ -20,6 +20,7 @@ public class Documentation extends Entity {
     public static final String DOCUMENTATION_COLLECTION_NAME = "documentations";
 
     private String creator; // Reference to User
+    private String name;
     private List<String> comments;
     private String description;
 }

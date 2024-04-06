@@ -1,7 +1,7 @@
 package com.issue.manager.controllers.project;
 
 import com.issue.manager.controllers.BaseCrudController;
-import com.issue.manager.inputs.project.Documentation;
+import com.issue.manager.models.project.Documentation;
 import com.issue.manager.inputs.project.DocumentationInput;
 import com.issue.manager.repositories.EntityRepository;
 import org.springframework.stereotype.Controller;
