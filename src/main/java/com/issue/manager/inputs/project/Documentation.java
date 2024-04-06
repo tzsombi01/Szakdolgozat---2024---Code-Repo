@@ -1,4 +1,4 @@
-package com.issue.manager.models.project;
+package com.issue.manager.inputs.project;
 
 import com.issue.manager.models.Entity;
 import lombok.AllArgsConstructor;
@@ -15,10 +15,9 @@ import java.util.List;
 @AllArgsConstructor
 @RequiredArgsConstructor
 @FieldNameConstants
-@Document(collation = Discussion.DISCUSSION_COLLECTION_NAME)
-public class Discussion extends Entity {
-
-    public static final String DISCUSSION_COLLECTION_NAME = "discussions";
+@Document(collation = Documentation.DOCUMENTATION_COLLECTION_NAME)
+public class Documentation extends Entity {
+    public static final String DOCUMENTATION_COLLECTION_NAME = "documentations";
 
     private String creator; // Reference to User
     private List<String> comments;
