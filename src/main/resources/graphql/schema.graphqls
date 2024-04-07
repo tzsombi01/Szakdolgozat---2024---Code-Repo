@@ -1,0 +1,28 @@
+type Query {
+
+}
+
+type Mutation {
+
+}
+
+input SiteInput {
+    name: String
+}
+
+type FileWithContent {
+    file: File
+    content: [Int]
+}
+
+type Page {
+    content: [Pageable]
+    total: Long
+}
+
+union Pageable =
+
+scalar Long
+scalar Upload
+scalar DateTime
+scalar JSON
