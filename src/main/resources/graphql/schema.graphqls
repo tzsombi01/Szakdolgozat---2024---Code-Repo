@@ -1,18 +1,150 @@
 type Query {
+    getTickets(queryOptions: QueryOptions): Page
 
+    getComments(queryOptions: QueryOptions): Page
+
+    getDiscussions(queryOptions: QueryOptions): Page
+
+    getDocumentations(queryOptions: QueryOptions): Page
 }
 
 type Mutation {
+    createTicket(ticket: TicketInput): Ticket
+    editTicket(id: ID, ticket: TicketInput): Ticket
+    deleteTicket(id: ID): Ticket
 
+    createComment(comment: CommentInput): Comment
+    editComment(id: ID, comment: CommentInput): Comment
+    deleteComment(id: ID): Comment
+
+    createDiscussion(discussion: DiscussionInput): Discussion
+    editDiscussion(id: ID, discussion: DiscussionInput): Discussion
+    deleteDiscussion(id: ID): Discussion
+
+    createDocumentation(documentation: DocumentationInput): Documentation
+    editDocumentation(id: ID, documentation: DocumentationInput): Documentation
+    deleteDocumentation(id: ID): Documentation
 }
 
-input SiteInput {
+input QueryOptions {
+    skip: Int
+    take: Int
+    filters: [Filter]
+    sort: Sort
+}
+
+input Filter {
+    field: String!
+    operator: Operator!
+    value: String!
+    type: String!
+}
+
+input Sort {
+    dir: String!
+    field: String!
+}
+
+input TicketInput {
+    ticketNumber: Long
+    assignee: String
     name: String
+    creator: String
+    description: String
+    ticketReferences: [String]
+    statuses: [String]
+    comments: [String]
+    mentionedInCommits: [String]
 }
 
-type FileWithContent {
-    file: File
-    content: [Int]
+input CommentInput {
+    creator: String
+    description: String
+    edited: Boolean
+}
+
+input DiscussionInput {
+    creator: String
+    name: String
+    description: String
+    comments: [String]
+}
+
+input DocumentationInput {
+    creator: String
+    name: String
+    description: String
+    comments: [String]
+}
+
+interface Entity {
+    id: ID!
+    createdAt: Long
+    modifiedAt: Long
+    createdBy: String
+    modifiedBy: String
+    deleted: Boolean
+}
+
+type Ticket implements Entity {
+    id: ID!
+    siteRef: String
+    createdAt: Long
+    modifiedAt: Long
+    createdBy: String
+    modifiedBy: String
+    deleted: Boolean
+    ticketNumber: Discussion
+    assignee: String
+    name: String
+    creator: String
+    description: String
+    ticketReferences: [String]
+    statuses: [String]
+    comments: [String]
+    mentionedInCommits: [String]
+}
+
+type Comment implements Entity {
+    id: ID!
+    siteRef: String
+    createdAt: Long
+    modifiedAt: Long
+    createdBy: String
+    modifiedBy: String
+    deleted: Boolean
+    creator: String
+    description: String
+    edited: Boolean
+}
+
+
+type Discussion implements Entity {
+    id: ID!
+    siteRef: String
+    createdAt: Long
+    modifiedAt: Long
+    createdBy: String
+    modifiedBy: String
+    deleted: Boolean
+    creator: String
+    name: String
+    description: String
+    comments: [String]
+}
+
+type Documentation implements Entity {
+    id: ID!
+    siteRef: String
+    createdAt: Long
+    modifiedAt: Long
+    createdBy: String
+    modifiedBy: String
+    deleted: Boolean
+    creator: String
+    name: String
+    description: String
+    comments: [String]
 }
 
 type Page {
@@ -20,9 +152,29 @@ type Page {
     total: Long
 }
 
-union Pageable =
+enum Operator {
+    eq
+    neq
+    contains
+    doesnotcontain
+    startswith
+    endswith
+    isnull
+    isnotnull
+    isempty
+    isnotempty
+    gte
+    gt
+    lte
+    lt
+    includes
+    between
+}
+
+union Pageable = Ticket
 
 scalar Long
 scalar Upload
 scalar DateTime
 scalar JSON
+
