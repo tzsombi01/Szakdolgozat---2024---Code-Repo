@@ -11,7 +11,6 @@ import java.lang.reflect.ParameterizedType;
 
 @Getter
 @Setter
-@FieldNameConstants
 public abstract class ModelInput<Model extends Entity> {
 
     public void validateCreate() {

@@ -4,9 +4,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.issue.manager.controllers.base.Method;
 import com.issue.manager.inputs.ModelInput;
 import com.issue.manager.models.Entity;
+import com.issue.manager.models.core.QueryOptions;
 import com.issue.manager.repositories.EntityRepository;
+import com.issue.manager.services.base.QueryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
 import java.util.ArrayList;
@@ -20,6 +24,9 @@ public abstract class BaseCrudController<Input extends ModelInput<Model>, Model 
 
 
     protected final EntityRepository<Model> repository;
+
+    @Autowired
+    private QueryService queryService;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -119,6 +126,21 @@ public abstract class BaseCrudController<Input extends ModelInput<Model>, Model 
         } catch (Exception ex) {
             log.error(ex.getMessage());
             throw new RuntimeException(ex.getMessage());
+        }
+
+    }
+
+    public Page<Model> find(Object rawQueryOptions) {
+
+        try {
+
+            QueryOptions queryOptions = objectMapper.convertValue(rawQueryOptions, QueryOptions.class);
+
+            return queryService.findEntity(queryOptions, getModelClass());
+
+        } catch (Exception ex) {
+            log.error(ex.getMessage());
+            throw new RuntimeException("Did not find all");
         }
 
     }
