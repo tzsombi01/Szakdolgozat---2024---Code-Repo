@@ -1,25 +1,10 @@
 package com.issue.manager.controllers.project;
 
-import com.issue.manager.controllers.BaseCrudController;
-import com.issue.manager.models.project.Documentation;
-import com.issue.manager.inputs.project.DocumentationInput;
-import com.issue.manager.repositories.EntityRepository;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-public class DocumentationController extends BaseCrudController<DocumentationInput, Documentation> {
+@RequestMapping("/api/documentations")
+public class DocumentationController {
 
-    public DocumentationController(EntityRepository<Documentation> repository) {
-        super(repository);
-    }
-
-    @Override
-    protected Class<DocumentationInput> getInputClass() {
-        return DocumentationInput.class;
-    }
-
-    @Override
-    protected Class<Documentation> getModelClass() {
-        return Documentation.class;
-    }
 }

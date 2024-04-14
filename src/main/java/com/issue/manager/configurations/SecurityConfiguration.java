@@ -28,7 +28,6 @@ public class SecurityConfiguration {
                 .and()
                 .authorizeHttpRequests(auth ->
                         auth.requestMatchers("/**").permitAll()
-                                .requestMatchers("/api/v1/demo").permitAll()
                                 .anyRequest().authenticated()
                 )
                 .sessionManagement()

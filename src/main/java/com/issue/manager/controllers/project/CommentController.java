@@ -1,25 +1,10 @@
 package com.issue.manager.controllers.project;
 
-import com.issue.manager.controllers.BaseCrudController;
-import com.issue.manager.inputs.project.CommentInput;
-import com.issue.manager.models.project.Comment;
-import com.issue.manager.repositories.EntityRepository;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-public class CommentController extends BaseCrudController<CommentInput, Comment> {
+@RequestMapping("/api/comments")
+public class CommentController {
 
-    public CommentController(EntityRepository<Comment> repository) {
-        super(repository);
-    }
-
-    @Override
-    protected Class<CommentInput> getInputClass() {
-        return CommentInput.class;
-    }
-
-    @Override
-    protected Class<Comment> getModelClass() {
-        return Comment.class;
-    }
 }
