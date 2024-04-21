@@ -1,9 +1,9 @@
 package com.issue.manager.services.base;
 
 import com.issue.manager.auth.JwtService;
+import com.issue.manager.inputs.base.UserInput;
 import com.issue.manager.inputs.dtos.AuthenticationRequest;
 import com.issue.manager.inputs.dtos.AuthenticationResponse;
-import com.issue.manager.inputs.dtos.RegisterRequest;
 import com.issue.manager.models.base.User;
 import com.issue.manager.repositories.base.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +26,7 @@ public class AuthenticationService {
 
     private final AuthenticationManager authenticationManager;
 
-    public AuthenticationResponse register(RegisterRequest request) {
+    public AuthenticationResponse register(UserInput request) {
         String firstName = request.getFirstName();
         if(firstName == null || firstName.length() == 0) {
             throw new IllegalArgumentException("Name must be at least one caharcter long");
@@ -49,16 +49,7 @@ public class AuthenticationService {
 //            CredentialChecker.ifUserPresentWithEmailThrowAuthException(email, userRepository);
         }
 
-        User user = User
-                .builder()
-                .firstName(firstName)
-                .lastName(lastName)
-                .email(email)
-                .password(passwordEncoder.encode(request.getPassword()))
-                .active(true)
-                .locked(false)
-//                .role(Role.USER)
-                .build();
+        User user = request.toModel();
 
         userRepository.save(user);
 

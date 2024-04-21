@@ -1,8 +1,8 @@
 package com.issue.manager.controllers.base;
 
+import com.issue.manager.inputs.base.UserInput;
 import com.issue.manager.inputs.dtos.AuthenticationRequest;
 import com.issue.manager.inputs.dtos.AuthenticationResponse;
-import com.issue.manager.inputs.dtos.RegisterRequest;
 import com.issue.manager.services.base.AuthenticationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,7 +17,7 @@ public class AuthenticationController {
 
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.OK)
-    public AuthenticationResponse register(@RequestBody RegisterRequest request) {
+    public AuthenticationResponse register(@RequestBody UserInput request) {
         return authenticationService.register(request);
     }
 
