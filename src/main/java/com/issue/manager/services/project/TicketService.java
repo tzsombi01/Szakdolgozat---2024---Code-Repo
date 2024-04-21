@@ -6,8 +6,11 @@ import com.issue.manager.repositories.project.TicketRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @Log4j2
@@ -17,9 +20,8 @@ public class TicketService {
     private final TicketRepository ticketRepository;
 
     public Page<Ticket> getTickets() {
-        return ticketRepository.findAll(
-                PageRequest.of(1, 2)
-        );
+        List<Ticket> all = ticketRepository.findAll();
+        return new PageImpl<>(all);
     }
 
     public Ticket createTicket(TicketInput ticketInput) {

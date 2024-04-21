@@ -1,10 +1,7 @@
 package com.issue.manager.models.base;
 
 import com.issue.manager.models.Entity;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.FieldNameConstants;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.security.core.GrantedAuthority;
@@ -18,6 +15,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @RequiredArgsConstructor
+@Builder
 @FieldNameConstants
 @Document(collection = User.USERS_COLLECTION_NAME)
 public class User extends Entity implements UserDetails {
@@ -29,7 +27,7 @@ public class User extends Entity implements UserDetails {
     private String lastName;
     private String email;
     private String password;
-    private String accessToken; // GitHub access token
+//    private String accessToken; // GitHub access token
     private boolean active;
     private boolean locked;
 
