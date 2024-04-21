@@ -5,6 +5,8 @@ import com.issue.manager.models.base.User;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 public class UserInput extends ModelInput<User> {
@@ -14,6 +16,7 @@ public class UserInput extends ModelInput<User> {
     private String lastName;
     private String email;
     private String password;
+    private List<String> gitUserNames;
     private boolean active = true;
     private boolean locked;
 
@@ -25,6 +28,7 @@ public class UserInput extends ModelInput<User> {
         model.setLastName(this.lastName);
         model.setEmail(this.email);
         model.setPassword(this.password);
+        model.setGitUserNames(this.gitUserNames);
         model.setActive(this.active);
         model.setLocked(this.locked);
 
