@@ -46,10 +46,14 @@ public class AuthenticationService {
                 throw new RuntimeException("Email did not validate");
             }
 
-//            CredentialChecker.ifUserPresentWithEmailThrowAuthException(email, userRepository);
+            if (userRepository.existsByEmail(email)) {
+                throw new RuntimeException("User already exists with email " + email);
+            }
         }
 
         User user = request.toModel();
+
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
 
         userRepository.save(user);
 

@@ -2,7 +2,6 @@ package com.issue.manager.inputs.project;
 
 import com.issue.manager.inputs.ModelInput;
 import com.issue.manager.models.project.Ticket;
-import com.issue.manager.models.project.TicketStatus;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -21,7 +20,6 @@ public class TicketInput extends ModelInput<Ticket> {
     private List<String> comments; // Comment references
     private List<String> mentionedInCommits; // Commit references
 
-    @Override
     public Ticket toModel(Ticket model) {
         model.setTicketNumber(ticketNumber);
         model.setAssignee(assignee);

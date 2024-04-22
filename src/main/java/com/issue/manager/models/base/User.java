@@ -5,7 +5,6 @@ import lombok.*;
 import lombok.experimental.FieldNameConstants;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
@@ -15,7 +14,6 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @RequiredArgsConstructor
-@Builder
 @FieldNameConstants
 @Document(collection = User.USERS_COLLECTION_NAME)
 public class User extends Entity implements UserDetails {

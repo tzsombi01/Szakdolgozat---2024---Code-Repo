@@ -22,7 +22,6 @@ public class UserInput extends ModelInput<User> {
 
     @Override
     public User toModel(User model) {
-        super.toModel();
         model.setUserName(this.userName);
         model.setFirstName(this.firstName);
         model.setLastName(this.lastName);
@@ -32,6 +31,7 @@ public class UserInput extends ModelInput<User> {
         model.setActive(this.active);
         model.setLocked(this.locked);
 
+        System.out.println(model.getPassword());
         return model;
     }
 }

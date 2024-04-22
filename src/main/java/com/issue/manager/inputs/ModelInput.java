@@ -1,11 +1,9 @@
 package com.issue.manager.inputs;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.issue.manager.models.Entity;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
-import lombok.experimental.FieldNameConstants;
 
 import java.lang.reflect.ParameterizedType;
 
