@@ -21,8 +21,9 @@ public class AuthenticationController {
         return authenticationService.register(request);
     }
 
-    @PostMapping("/authenticate")
-    public AuthenticationResponse authenticate(@RequestBody AuthenticationRequest request) {
-        return authenticationService.authenticate(request);
+    @PostMapping("/login")
+    @ResponseStatus(HttpStatus.OK)
+    public AuthenticationResponse login(@RequestBody AuthenticationRequest request) {
+        return authenticationService.login(request);
     }
 }

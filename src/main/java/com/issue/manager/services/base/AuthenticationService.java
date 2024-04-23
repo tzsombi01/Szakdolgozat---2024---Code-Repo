@@ -63,7 +63,7 @@ public class AuthenticationService {
                 .build();
     }
 
-    public AuthenticationResponse authenticate(AuthenticationRequest request) {
+    public AuthenticationResponse login(AuthenticationRequest request) {
         String email = request.getEmail();
         if(email != null && email.length() > 0) {
             email = email.toLowerCase();
