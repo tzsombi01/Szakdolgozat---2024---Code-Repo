@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -28,5 +27,12 @@ public class TicketService {
         Ticket ticket = ticketInput.toModel();
 
         return ticketRepository.save(ticket);
+    }
+
+    public Ticket getTicket(String id) {
+        Ticket ticket = ticketRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Ticket was not found by id " + id));
+
+        return ticket;
     }
 }
