@@ -35,4 +35,27 @@ public class TicketService {
 
         return ticket;
     }
+
+    public Ticket editTicket(String id, TicketInput ticketInput) {
+        Ticket ticket = ticketRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Ticket was not found by id " + id));
+
+
+        Ticket editedTicket = ticketInput.toModel(ticket);
+
+        return ticket;
+    }
+
+    public Ticket deleteTicket(String id) {
+
+
+        Ticket ticket = ticketRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Ticket was not found by id " + id));
+
+        ticketRepository.deleteById(id);
+
+
+
+        return ticket;
+    }
 }

@@ -18,7 +18,7 @@ public class TicketController {
 
     private final TicketService ticketService;
 
-    @PostMapping("/get")
+    @PostMapping
     @ResponseStatus(HttpStatus.OK)
     public Page<Ticket> getTickets(@RequestBody QueryOptions queryOptions) {
         return ticketService.getTickets();
@@ -26,7 +26,7 @@ public class TicketController {
 
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public Ticket getTickets(@PathVariable String id) {
+    public Ticket getTicket(@PathVariable String id) {
         return ticketService.getTicket(id);
     }
 
@@ -34,5 +34,17 @@ public class TicketController {
     @ResponseStatus(HttpStatus.CREATED)
     public Ticket createTicket(@RequestBody TicketInput ticketInput) {
         return ticketService.createTicket(ticketInput);
+    }
+
+    @PutMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public Ticket editTicket(@PathVariable String id, @RequestBody TicketInput ticketInput) {
+        return ticketService.editTicket(id, ticketInput);
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public Ticket deleteTicket(@PathVariable String id) {
+        return ticketService.deleteTicket(id);
     }
 }
