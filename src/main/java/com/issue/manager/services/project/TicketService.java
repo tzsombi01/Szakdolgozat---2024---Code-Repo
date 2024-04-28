@@ -47,14 +47,10 @@ public class TicketService {
     }
 
     public Ticket deleteTicket(String id) {
-
-
         Ticket ticket = ticketRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Ticket was not found by id " + id));
 
         ticketRepository.deleteById(id);
-
-
 
         return ticket;
     }
