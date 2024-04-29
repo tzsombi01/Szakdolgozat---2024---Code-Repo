@@ -18,7 +18,7 @@ public class ProjectController {
 
     private final ProjectService projectService;
 
-    @PostMapping
+    @PostMapping("/get")
     @ResponseStatus(HttpStatus.OK)
     public Page<Project> getProjects(@RequestBody QueryOptions queryOptions) {
         return projectService.getProjects();

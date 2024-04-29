@@ -24,7 +24,6 @@ public class ProjectService {
         return new PageImpl<>(all);
     }
 
-
     public Project getProject(String id) {
         Project project = projectRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Project was not found by id " + id));

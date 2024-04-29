@@ -31,7 +31,6 @@ public class UserInput extends ModelInput<User> {
         model.setActive(this.active);
         model.setLocked(this.locked);
 
-        System.out.println(model.getPassword());
         return model;
     }
 }
