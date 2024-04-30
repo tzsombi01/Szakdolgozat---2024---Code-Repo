@@ -8,6 +8,7 @@ import lombok.Setter;
 import lombok.experimental.FieldNameConstants;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -24,5 +25,13 @@ public class Project extends Entity {
     private String name;
     private List<String> tickets; // Ticket references
     private List<String> users; // User references
+
+    public void addUser(String id) {
+        if (users == null) {
+            users = new ArrayList<>();
+        }
+
+        users.add(id);
+    }
 }
 

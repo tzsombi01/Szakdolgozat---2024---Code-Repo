@@ -1,12 +1,14 @@
 package com.issue.manager.services.project;
 
 import com.issue.manager.inputs.project.ProjectInput;
+import com.issue.manager.models.base.User;
 import com.issue.manager.models.project.Project;
 import com.issue.manager.repositories.project.ProjectRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -34,7 +36,11 @@ public class ProjectService {
     public Project createProject(ProjectInput projectInput) {
         Project project = projectInput.toModel();
 
-        return project;
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        project.addUser(user.getId());
+
+        return projectRepository.save(project);
     }
 
     public Project editProject(String id, ProjectInput projectInput) {
@@ -42,6 +48,8 @@ public class ProjectService {
                 .orElseThrow(() -> new RuntimeException("Project was not found by id " + id));
 
         Project editedProject = projectInput.toModel(project);
+
+        projectRepository.save(editedProject);
 
         return project;
     }
@@ -52,6 +60,6 @@ public class ProjectService {
 
         projectRepository.deleteById(id);
 
-        return null;
+        return project;
     }
 }
