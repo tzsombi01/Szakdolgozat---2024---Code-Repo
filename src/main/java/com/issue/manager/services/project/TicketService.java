@@ -1,6 +1,7 @@
 package com.issue.manager.services.project;
 
 import com.issue.manager.inputs.project.TicketInput;
+import com.issue.manager.models.project.Project;
 import com.issue.manager.models.project.Ticket;
 import com.issue.manager.repositories.project.TicketRepository;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +18,7 @@ import java.util.List;
 public class TicketService {
 
     private final TicketRepository ticketRepository;
+    private final ProjectService projectService;
 
     public Page<Ticket> getTickets() {
         List<Ticket> all = ticketRepository.findAll();
@@ -26,7 +28,14 @@ public class TicketService {
     public Ticket createTicket(TicketInput ticketInput) {
         Ticket ticket = ticketInput.toModel();
 
+        ticket.setTicketNumber(generateTicketNumber(ticket));
+
         return ticketRepository.save(ticket);
+    }
+
+    private Long generateTicketNumber(Ticket ticket) {
+        Project project = projectService.getProject(ticket.getProject());
+        return (long) (project.getTickets().size() + 1);
     }
 
     public Ticket getTicket(String id) {

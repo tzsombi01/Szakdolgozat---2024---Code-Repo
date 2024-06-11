@@ -30,7 +30,7 @@ public class ProjectService {
         Project project = projectRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Project was not found by id " + id));
 
-        return null;
+        return project;
     }
 
     public Project createProject(ProjectInput projectInput) {
