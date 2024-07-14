@@ -8,6 +8,7 @@ import lombok.Setter;
 import lombok.experimental.FieldNameConstants;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -24,4 +25,21 @@ public class Discussion extends Entity {
     private String name;
     private List<String> comments;
     private String description;
+
+    public void addComment(String id) {
+        if (comments == null) {
+            comments = new ArrayList<>();
+        }
+
+        comments.add(id);
+    }
+
+    public void deleteComment(String id) {
+        if (comments == null) {
+            comments = new ArrayList<>();
+            return;
+        }
+
+        comments.remove(id);
+    }
 }

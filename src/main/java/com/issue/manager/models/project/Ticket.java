@@ -8,6 +8,7 @@ import lombok.Setter;
 import lombok.experimental.FieldNameConstants;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -30,4 +31,20 @@ public class Ticket extends Entity {
     private List<String> comments; // Comment references
     private List<String> mentionedInCommits; // Commit references
 
+    public void addComment(String id) {
+        if (comments == null) {
+            comments = new ArrayList<>();
+        }
+
+        comments.add(id);
+    }
+
+    public void deleteComment(String id) {
+        if (comments == null) {
+            comments = new ArrayList<>();
+            return;
+        }
+
+        comments.remove(id);
+    }
 }
