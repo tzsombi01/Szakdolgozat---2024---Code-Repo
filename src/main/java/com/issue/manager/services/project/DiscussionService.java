@@ -1,6 +1,7 @@
 package com.issue.manager.services.project;
 
 import com.issue.manager.inputs.project.DiscussionInput;
+import com.issue.manager.models.core.QueryOptions;
 import com.issue.manager.models.project.Discussion;
 import com.issue.manager.repositories.project.DiscussionRepository;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +17,7 @@ public class DiscussionService {
 
     private final DiscussionRepository discussionRepository;
 
-    public Page<Discussion> getDiscussions() {
+    public Page<Discussion> getDiscussions(QueryOptions queryOptions) {
         return new PageImpl<>(discussionRepository.findAll());
     }
 
