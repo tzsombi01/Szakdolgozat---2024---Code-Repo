@@ -22,6 +22,7 @@ public class Project extends Entity {
     public static final String PROJECT_COLLECTION_NAME = "projects";
 
     private String url;
+    private String gitHubUserName;
     private String name;
     private List<String> tickets; // Ticket references
     private List<String> users; // User references
@@ -32,6 +33,15 @@ public class Project extends Entity {
         }
 
         users.add(id);
+    }
+
+    public void deleteUser(String id) {
+        if (users == null) {
+            users = new ArrayList<>();
+            return;
+        }
+
+        users.remove(id);
     }
 }
 

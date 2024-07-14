@@ -4,6 +4,7 @@ import com.issue.manager.inputs.project.ProjectInput;
 import com.issue.manager.models.base.User;
 import com.issue.manager.models.project.Project;
 import com.issue.manager.repositories.project.ProjectRepository;
+import com.issue.manager.utils.GitHubService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
@@ -17,6 +18,8 @@ import java.util.List;
 @Log4j2
 @RequiredArgsConstructor
 public class ProjectService {
+
+    private final GitHubService githubService;
 
     private final ProjectRepository projectRepository;
 
@@ -37,8 +40,9 @@ public class ProjectService {
         Project project = projectInput.toModel();
 
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
         project.addUser(user.getId());
+
+        githubService.validatePublicRepository(project.getUrl());
 
         return projectRepository.save(project);
     }

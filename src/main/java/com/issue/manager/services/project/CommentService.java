@@ -82,6 +82,8 @@ public class CommentService {
 
         Comment editedComment = commentInput.toModel(comment);
 
+        editedComment.setEdited(true);
+
         commentRepository.save(editedComment);
 
         return comment;
