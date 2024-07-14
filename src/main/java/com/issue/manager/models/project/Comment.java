@@ -19,6 +19,8 @@ public class Comment extends Entity {
     public static final String COMMENTS_COLLECTION_NAME = "comments";
 
     private String creator; // Reference to User
+    private String reference;
+    private CommentType commentType;
     private String description;
     private boolean edited;
 }
