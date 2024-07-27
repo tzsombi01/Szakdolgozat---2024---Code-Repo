@@ -30,11 +30,11 @@ public class GitHubService {
                     .retrieve()
                     .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {})
                     .block();
-            if (repo == null || repo.get("private") == null || (Boolean) repo.get("private")) {
+            if (repo == null || repo.get("private") == null || Boolean.TRUE.equals(repo.get("private"))) {
                 throw new IllegalArgumentException("The repository is not public.");
             }
         } catch (WebClientResponseException.NotFound e) {
-            throw new IllegalArgumentException("The repository does not exist or illegal");
+            throw new IllegalArgumentException("The repository does not exist or not public");
         }
     }
 
