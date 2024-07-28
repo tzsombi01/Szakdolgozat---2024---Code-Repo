@@ -15,13 +15,11 @@ public class GitHubService {
 
     @Value("${github.api.url}")
     private String githubApiUrl;
-
-    private final String repositoryType = "public";
-
     private final WebClient.Builder webClientBuilder;
 
-    public void validatePublicRepository(String ownerName, String repoName) {
-        String repoStrippedName = stripRepositoryName(repoName);
+    public void validatePublicRepository(String repoName) {
+        String repoStrippedName = getRepositoryName(repoName);
+        String ownerName = getOwnerName(repoName);
         String repoUrlFull = githubApiUrl + "/" + ownerName + "/" + repoStrippedName;
         WebClient webClient = webClientBuilder.build();
         try {
@@ -38,7 +36,12 @@ public class GitHubService {
         }
     }
 
-    private String stripRepositoryName(String repoName) {
+    private String getOwnerName(String repoName) {
+        String signature = "github.com/";
+        return repoName.substring(repoName.indexOf(signature) + signature.length(), repoName.lastIndexOf("/"));
+    }
+
+    private String getRepositoryName(String repoName) {
         return repoName.substring(repoName.lastIndexOf("/") + 1, repoName.lastIndexOf("."));
     }
 }

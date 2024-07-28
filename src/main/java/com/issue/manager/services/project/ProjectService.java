@@ -39,10 +39,10 @@ public class ProjectService {
     public Project createProject(ProjectInput projectInput) {
         Project project = projectInput.toModel();
 
-//        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-//        project.addUser(user.getId());
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        project.addUser(user.getId());
 
-        githubService.validatePublicRepository(project.getGitHubUserName(), project.getUrl());
+        githubService.validatePublicRepository(project.getUrl());
 
         return projectRepository.save(project);
     }
