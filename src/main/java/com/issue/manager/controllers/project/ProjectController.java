@@ -21,7 +21,7 @@ public class ProjectController {
     @PostMapping("/get")
     @ResponseStatus(HttpStatus.OK)
     public Page<Project> getProjects(@RequestBody QueryOptions queryOptions) {
-        return projectService.getProjects();
+        return projectService.getProjects(queryOptions);
     }
 
     @GetMapping("/{id}")

@@ -5,6 +5,8 @@ import com.issue.manager.models.project.Ticket;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.Instant;
+import java.util.Date;
 import java.util.List;
 
 @Getter
@@ -31,6 +33,7 @@ public class TicketInput extends ModelInput<Ticket> {
         model.setStatuses(statuses);
         model.setComments(comments);
         model.setMentionedInCommits(mentionedInCommits);
+        model.setCreatedAt(new Date().getTime());
 
         return model;
     }

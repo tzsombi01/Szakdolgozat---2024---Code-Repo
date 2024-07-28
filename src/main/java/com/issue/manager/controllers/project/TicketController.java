@@ -21,7 +21,7 @@ public class TicketController {
     @PostMapping("/get")
     @ResponseStatus(HttpStatus.OK)
     public Page<Ticket> getTickets(@RequestBody QueryOptions queryOptions) {
-        return ticketService.getTickets();
+        return ticketService.getTickets(queryOptions);
     }
 
     @GetMapping("/{id}")
