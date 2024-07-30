@@ -22,6 +22,7 @@ public class Ticket extends Entity {
     public static final String TICKET_COLLECTION_NAME = "tickets";
 
     private Long ticketNumber;
+    private String name;
     private String project; // Project reference
     private String assignee; // User reference
     private String creator; // User reference

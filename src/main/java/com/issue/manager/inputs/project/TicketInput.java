@@ -14,6 +14,7 @@ import java.util.List;
 public class TicketInput extends ModelInput<Ticket> {
 
     private Long ticketNumber;
+    private String name;
     private String project; // Project reference
     private String assignee; // User reference
     private String creator; // User reference
@@ -25,6 +26,7 @@ public class TicketInput extends ModelInput<Ticket> {
 
     public Ticket toModel(Ticket model) {
         model.setTicketNumber(ticketNumber);
+        model.setName(name);
         model.setProject(project);
         model.setAssignee(assignee);
         model.setCreator(creator);
