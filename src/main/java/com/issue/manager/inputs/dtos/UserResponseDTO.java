@@ -8,6 +8,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 public class UserResponseDTO {
+    private String id;
     private String userName;
     private String firstName;
     private String lastName;
