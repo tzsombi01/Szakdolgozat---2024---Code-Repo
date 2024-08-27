@@ -1,6 +1,7 @@
 package com.issue.manager.services.project;
 
 import com.issue.manager.inputs.project.TicketInput;
+import com.issue.manager.models.base.User;
 import com.issue.manager.models.core.Filter;
 import com.issue.manager.models.core.QueryOptions;
 import com.issue.manager.models.project.Project;
@@ -10,6 +11,7 @@ import com.issue.manager.repositories.project.TicketRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.*;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
@@ -44,6 +46,8 @@ public class TicketService {
     public Ticket createTicket(TicketInput ticketInput) {
         Ticket ticket = ticketInput.toModel();
 
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        ticket.setCreator(user.getId());
         ticket.setTicketNumber(generateTicketNumber(ticket));
 
         return ticketRepository.save(ticket);
