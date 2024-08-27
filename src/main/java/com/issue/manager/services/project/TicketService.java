@@ -12,6 +12,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -52,7 +53,13 @@ public class TicketService {
         Project project = projectRepository.findById(ticket.getProject())
                 .orElseThrow(() -> new RuntimeException("Project was not found by id " + ticket.getProject()));
 
-        return (long) (project.getTickets().size() + 1);
+        Long maxTicketNumber = project.getTickets().stream().map(id -> ticketRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Ticket was not found by id " + id)))
+                .max(Comparator.comparing(Ticket::getTicketNumber))
+                .map(Ticket::getTicketNumber)
+                .orElseThrow(() -> new RuntimeException("No tickets found in the project"));
+
+        return maxTicketNumber + 1;
     }
 
     public Ticket getTicket(String id) {
