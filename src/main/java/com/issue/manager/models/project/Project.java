@@ -42,5 +42,21 @@ public class Project extends Entity {
 
         users.remove(id);
     }
+
+    public void addTicket(String id) {
+        if (tickets == null) {
+            tickets = new ArrayList<>();
+        }
+
+        tickets.add(id);
+    }
+
+    public void removeTicket(String id) {
+        if (tickets == null) {
+            tickets = new ArrayList<>();
+        }
+
+        tickets.remove(id);
+    }
 }
 

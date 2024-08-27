@@ -5,11 +5,14 @@ import com.issue.manager.models.core.Filter;
 import com.issue.manager.models.core.QueryOptions;
 import com.issue.manager.models.project.Project;
 import com.issue.manager.models.project.Ticket;
+import com.issue.manager.repositories.project.ProjectRepository;
 import com.issue.manager.repositories.project.TicketRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @Log4j2
@@ -17,7 +20,7 @@ import org.springframework.stereotype.Service;
 public class TicketService {
 
     private final TicketRepository ticketRepository;
-    private final ProjectService projectService;
+    private final ProjectRepository projectRepository;
 
     public Page<Ticket> getTickets(QueryOptions queryOptions) {
         Ticket exampleTicket = new Ticket();
@@ -46,7 +49,9 @@ public class TicketService {
     }
 
     private Long generateTicketNumber(Ticket ticket) {
-        Project project = projectService.getProject(ticket.getProject());
+        Project project = projectRepository.findById(ticket.getProject())
+                .orElseThrow(() -> new RuntimeException("Project was not found by id " + ticket.getProject()));
+
         return (long) (project.getTickets().size() + 1);
     }
 
@@ -61,7 +66,6 @@ public class TicketService {
         Ticket ticket = ticketRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Ticket was not found by id " + id));
 
-
         Ticket editedTicket = ticketInput.toModel(ticket);
 
         return ticket;
@@ -70,6 +74,11 @@ public class TicketService {
     public Ticket deleteTicket(String id) {
         Ticket ticket = ticketRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Ticket was not found by id " + id));
+
+        Project project = projectRepository.findById(ticket.getProject())
+                .orElseThrow(() -> new RuntimeException("Project was not found by id " + ticket.getProject()));
+        project.removeTicket(id);
+        projectRepository.save(project);
 
         ticketRepository.deleteById(id);
 
