@@ -29,10 +29,12 @@ public class TicketService {
         Ticket exampleTicket = new Ticket();
         ExampleMatcher matcher = ExampleMatcher.matching();
 
-        for (Filter filter : queryOptions.getFilters()) {
-            if ("project".equals(filter.getField())) {
-                exampleTicket.setProject((String) filter.getValue());
-                matcher = matcher.withMatcher("project", ExampleMatcher.GenericPropertyMatchers.exact());
+        if (queryOptions.getFilters() != null) {
+            for (Filter filter : queryOptions.getFilters()) {
+                if ("project".equals(filter.getField())) {
+                    exampleTicket.setProject((String) filter.getValue());
+                    matcher = matcher.withMatcher("project", ExampleMatcher.GenericPropertyMatchers.exact());
+                }
             }
         }
 
