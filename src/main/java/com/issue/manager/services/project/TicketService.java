@@ -40,7 +40,7 @@ public class TicketService {
 
         Example<Ticket> example = Example.of(exampleTicket, matcher);
 
-        Pageable pageable = PageRequest.of(queryOptions.getSkip(), queryOptions.getTake());
+        Pageable pageable = PageRequest.of(queryOptions.getSkip(), queryOptions.getTake() > 0 ? queryOptions.getTake() : 10);
 
         return ticketRepository.findAll(example, pageable);
     }
@@ -80,8 +80,8 @@ public class TicketService {
                 .orElseThrow(() -> new RuntimeException("Ticket was not found by id " + id));
 
         Ticket editedTicket = ticketInput.toModel(ticket);
-
-        return ticket;
+        ticketRepository.save(editedTicket);
+        return editedTicket;
     }
 
     public Ticket deleteTicket(String id) {

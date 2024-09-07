@@ -25,7 +25,6 @@ public class TicketInput extends ModelInput<Ticket> {
     private List<String> mentionedInCommits; // Commit references
 
     public Ticket toModel(Ticket model) {
-        model.setTicketNumber(ticketNumber);
         model.setName(name);
         model.setProject(project);
         model.setAssignee(assignee);
