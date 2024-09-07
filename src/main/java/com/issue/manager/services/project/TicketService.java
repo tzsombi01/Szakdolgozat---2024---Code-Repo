@@ -52,18 +52,27 @@ public class TicketService {
         ticket.setCreator(user.getId());
         ticket.setTicketNumber(generateTicketNumber(ticket));
 
-        return ticketRepository.save(ticket);
+        Ticket savedTicket = ticketRepository.save(ticket);
+
+        Project project = projectRepository.findById(ticket.getProject())
+                .orElseThrow(() -> new RuntimeException("Project was not found by id " + ticket.getProject()));
+
+        project.addTicket(savedTicket.getId());
+        projectRepository.save(project);
+
+        return savedTicket;
     }
 
     private Long generateTicketNumber(Ticket ticket) {
         Project project = projectRepository.findById(ticket.getProject())
                 .orElseThrow(() -> new RuntimeException("Project was not found by id " + ticket.getProject()));
 
-        Long maxTicketNumber = project.getTickets().stream().map(id -> ticketRepository.findById(id)
+        List<String> tickets = project.getTickets();
+        Long maxTicketNumber = tickets.stream().map(id -> ticketRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Ticket was not found by id " + id)))
                 .max(Comparator.comparing(Ticket::getTicketNumber))
                 .map(Ticket::getTicketNumber)
-                .orElseThrow(() -> new RuntimeException("No tickets found in the project"));
+                .orElse(0L);
 
         return maxTicketNumber + 1;
     }
