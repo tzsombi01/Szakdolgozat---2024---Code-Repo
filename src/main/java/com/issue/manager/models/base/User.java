@@ -41,6 +41,10 @@ public class User extends Entity implements UserDetails {
         return email;
     }
 
+    public String getUsernameUserName() {
+        return userName;
+    }
+
     @Override
     public boolean isAccountNonExpired() {
         return true;

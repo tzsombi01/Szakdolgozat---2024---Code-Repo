@@ -11,7 +11,6 @@ import java.util.List;
 @Setter
 public class DocumentationInput extends ModelInput<Documentation> {
 
-    private String creator; // Reference to User
     private String name;
     private String project;
     private List<String> comments;
@@ -19,7 +18,6 @@ public class DocumentationInput extends ModelInput<Documentation> {
 
     @Override
     public Documentation toModel(Documentation model) {
-        model.setCreator(creator);
         model.setName(name);
         model.setProject(project);
         model.setDescription(description);

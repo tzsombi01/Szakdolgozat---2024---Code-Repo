@@ -27,7 +27,7 @@ public class UserService {
 
         return new UserResponseDTO(
                 user.getId(),
-                user.getUsername(),
+                user.getUsernameUserName(),
                 user.getFirstName(),
                 user.getLastName(),
                 user.getEmail(),
@@ -42,15 +42,13 @@ public class UserService {
             if ("id".equals(filter.getField())) {
                 List<String> ids = (List<String>) filter.getValue();
 
-                for (String id : ids) {
-                    allUsers.add(userRepository.findById(id).orElseThrow(() -> new RuntimeException("Ticket was not found by id " + id)));
-                }
+                allUsers.addAll(userRepository.findAllById(ids));
             }
         }
 
         return allUsers.stream().map(user -> new UserResponseDTO(
                 user.getId(),
-                user.getUsername(),
+                user.getUsernameUserName(),
                 user.getFirstName(),
                 user.getLastName(),
                 user.getEmail(),

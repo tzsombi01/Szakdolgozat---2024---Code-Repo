@@ -16,7 +16,7 @@ import java.util.List;
 @AllArgsConstructor
 @RequiredArgsConstructor
 @FieldNameConstants
-@Document(collation = Documentation.DOCUMENTATION_COLLECTION_NAME)
+@Document(collection = Documentation.DOCUMENTATION_COLLECTION_NAME)
 public class Documentation extends Entity {
     public static final String DOCUMENTATION_COLLECTION_NAME = "documentations";
 

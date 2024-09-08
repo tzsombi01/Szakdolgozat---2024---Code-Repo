@@ -13,7 +13,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @AllArgsConstructor
 @RequiredArgsConstructor
 @FieldNameConstants
-@Document(collation = Comment.COMMENTS_COLLECTION_NAME)
+@Document(collection = Comment.COMMENTS_COLLECTION_NAME)
 public class Comment extends Entity {
 
     public static final String COMMENTS_COLLECTION_NAME = "comments";

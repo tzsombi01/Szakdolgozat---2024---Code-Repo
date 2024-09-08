@@ -12,7 +12,6 @@ import java.util.List;
 @Setter
 public class DiscussionInput extends ModelInput<Discussion> {
 
-    private String creator; // Reference to User
     private String name;
     private String project;
     private List<String> comments;
@@ -20,7 +19,6 @@ public class DiscussionInput extends ModelInput<Discussion> {
 
     @Override
     public Discussion toModel(Discussion model) {
-        model.setCreator(creator);
         model.setName(name);
         model.setProject(project);
         model.setDescription(description);
