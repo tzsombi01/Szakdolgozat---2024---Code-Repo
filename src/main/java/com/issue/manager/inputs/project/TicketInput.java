@@ -17,7 +17,6 @@ public class TicketInput extends ModelInput<Ticket> {
     private String name;
     private String project; // Project reference
     private String assignee; // User reference
-    private String creator; // User reference
     private String description;
     private List<String> ticketReferences; // Ticket reference
     private List<String> statuses;
@@ -28,7 +27,6 @@ public class TicketInput extends ModelInput<Ticket> {
         model.setName(name);
         model.setProject(project);
         model.setAssignee(assignee);
-        model.setCreator(creator);
         model.setDescription(description);
         model.setTicketReferences(ticketReferences);
         model.setStatuses(statuses);
