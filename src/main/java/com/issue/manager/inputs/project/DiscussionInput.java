@@ -14,6 +14,7 @@ public class DiscussionInput extends ModelInput<Discussion> {
 
     private String creator; // Reference to User
     private String name;
+    private String project;
     private List<String> comments;
     private String description;
 
@@ -21,6 +22,7 @@ public class DiscussionInput extends ModelInput<Discussion> {
     public Discussion toModel(Discussion model) {
         model.setCreator(creator);
         model.setName(name);
+        model.setProject(project);
         model.setDescription(description);
         model.setComments(comments);
 

@@ -13,6 +13,7 @@ public class DocumentationInput extends ModelInput<Documentation> {
 
     private String creator; // Reference to User
     private String name;
+    private String project;
     private List<String> comments;
     private String description;
 
@@ -20,6 +21,7 @@ public class DocumentationInput extends ModelInput<Documentation> {
     public Documentation toModel(Documentation model) {
         model.setCreator(creator);
         model.setName(name);
+        model.setProject(project);
         model.setDescription(description);
         model.setComments(comments);
 

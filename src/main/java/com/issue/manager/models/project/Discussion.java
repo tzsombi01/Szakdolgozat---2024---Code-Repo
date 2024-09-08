@@ -23,6 +23,7 @@ public class Discussion extends Entity {
 
     private String creator; // Reference to User
     private String name;
+    private String project;
     private List<String> comments;
     private String description;
 
