@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -61,6 +62,22 @@ public class GitHubService {
             if (repo == null || repo.get("private") == null || Boolean.TRUE.equals(repo.get("private"))) {
                 throw new IllegalArgumentException("The repository is not public.");
             }
+        } catch (WebClientResponseException.NotFound e) {
+            throw new IllegalArgumentException("The repository does not exist or not public");
+        }
+
+        return repo;
+    }
+
+    public List<Map<String, Object>> getPublicRepositoryCommits(String urlToCommits) {
+        WebClient webClient = webClientBuilder.build();
+        List<Map<String, Object>> repo = null;
+        try {
+            repo = webClient.get()
+                    .uri(urlToCommits)
+                    .retrieve()
+                    .bodyToMono(new ParameterizedTypeReference<List<Map<String, Object>>>() {})
+                    .block();
         } catch (WebClientResponseException.NotFound e) {
             throw new IllegalArgumentException("The repository does not exist or not public");
         }
