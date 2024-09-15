@@ -15,5 +15,5 @@ public class ProgrammerStatisticsResponse {
     private StatisticsType type;
     private Instant from;
     private Instant until;
-    private Object statisticsInfo;
+    private List<Object> statisticsInfos;
 }
