@@ -26,7 +26,7 @@ public class User extends Entity implements UserDetails {
     private String email;
     private String password;
     private List<String> gitUserNames;
-//    private String accessToken; // GitHub access token
+    private String accessToken; // GitHub access token
     private boolean active;
     private boolean locked;
 

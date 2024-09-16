@@ -55,4 +55,12 @@ public class UserService {
                 user.getGitUserNames()
         )).toList();
     }
+
+    public void setAccessToken(String accessToken) {
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        user.setAccessToken(accessToken);
+
+        userRepository.save(user);
+    }
 }

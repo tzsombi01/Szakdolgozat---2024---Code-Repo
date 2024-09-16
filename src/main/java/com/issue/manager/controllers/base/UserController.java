@@ -29,4 +29,10 @@ public class UserController {
     public List<UserResponseDTO> getUsers(@RequestBody QueryOptions queryOptions) {
         return userService.getUsers(queryOptions);
     }
+
+    @PostMapping("/access-token")
+    @ResponseStatus(HttpStatus.OK)
+    public void setAccessToken(@RequestBody String accessToken) {
+        userService.setAccessToken(accessToken);
+    }
 }
