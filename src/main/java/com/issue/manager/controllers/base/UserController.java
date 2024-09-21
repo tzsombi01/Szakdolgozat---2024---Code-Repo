@@ -1,5 +1,6 @@
 package com.issue.manager.controllers.base;
 
+import com.issue.manager.inputs.dtos.InviteUsersRequest;
 import com.issue.manager.inputs.dtos.UserResponseDTO;
 import com.issue.manager.models.core.QueryOptions;
 import com.issue.manager.services.base.UserService;
@@ -34,5 +35,11 @@ public class UserController {
     @ResponseStatus(HttpStatus.OK)
     public void setAccessToken(@RequestBody String accessToken) {
         userService.setAccessToken(accessToken);
+    }
+
+    @PostMapping("/invite")
+    @ResponseStatus(HttpStatus.OK)
+    public void inviteUsersToProject(@RequestBody InviteUsersRequest inviteUsersRequest) {
+        userService.inviteUsersToProject(inviteUsersRequest);
     }
 }

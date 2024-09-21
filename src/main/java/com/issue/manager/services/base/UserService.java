@@ -1,14 +1,13 @@
 package com.issue.manager.services.base;
 
+import com.issue.manager.inputs.dtos.InviteUsersRequest;
 import com.issue.manager.inputs.dtos.UserResponseDTO;
 import com.issue.manager.models.base.User;
 import com.issue.manager.models.core.Filter;
 import com.issue.manager.models.core.QueryOptions;
-import com.issue.manager.models.project.Ticket;
 import com.issue.manager.repositories.base.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.data.domain.*;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -62,5 +61,8 @@ public class UserService {
         user.setAccessToken(accessToken);
 
         userRepository.save(user);
+    }
+
+    public void inviteUsersToProject(InviteUsersRequest inviteUsersRequest) {
     }
 }
