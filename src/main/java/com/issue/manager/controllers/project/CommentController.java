@@ -10,6 +10,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Log4j2
 @RestController
 @RequestMapping("/api/comments")
@@ -20,7 +22,7 @@ public class CommentController {
 
     @PostMapping("/get")
     @ResponseStatus(HttpStatus.OK)
-    public Page<Comment> getComments(@RequestBody QueryOptions queryOptions) {
+    public List<Comment> getComments(@RequestBody QueryOptions queryOptions) {
         return commentService.getComments(queryOptions);
     }
 

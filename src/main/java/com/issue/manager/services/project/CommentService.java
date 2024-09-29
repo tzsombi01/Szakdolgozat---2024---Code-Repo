@@ -1,6 +1,7 @@
 package com.issue.manager.services.project;
 
 import com.issue.manager.inputs.project.CommentInput;
+import com.issue.manager.models.core.Filter;
 import com.issue.manager.models.core.QueryOptions;
 import com.issue.manager.models.project.Comment;
 import com.issue.manager.models.project.Discussion;
@@ -12,8 +13,7 @@ import com.issue.manager.repositories.project.DocumentationRepository;
 import com.issue.manager.repositories.project.TicketRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -28,10 +28,24 @@ public class CommentService {
     private final DiscussionRepository discussionRepository;
     private final DocumentationRepository documentationRepository;
 
-    public Page<Comment> getComments(QueryOptions queryOptions) {
-        List<Comment> all = commentRepository.findAll();
+    public  List<Comment> getComments(QueryOptions queryOptions) {
+        Comment exampleComment = new Comment();
+        ExampleMatcher matcher = ExampleMatcher.matching();
 
-        return new PageImpl<>(all);
+        if (queryOptions.getFilters() != null) {
+            for (Filter filter : queryOptions.getFilters()) {
+                if ("reference".equals(filter.getField())) {
+                    exampleComment.setReference((String) filter.getValue());
+                    matcher = matcher.withMatcher("reference", ExampleMatcher.GenericPropertyMatchers.exact());
+                }
+            }
+        }
+
+        Example<Comment> example = Example.of(exampleComment, matcher);
+
+        List<Comment> all = commentRepository.findAll(example);
+
+        return all;
     }
 
     public Comment getComment(String id) {
@@ -44,9 +58,11 @@ public class CommentService {
     public Comment createComment(CommentInput commentInput) {
         Comment comment = commentInput.toModel();
 
-        postCreate(comment);
+        Comment savedComment = commentRepository.save(comment);
 
-        return commentRepository.save(comment);
+        postCreate(savedComment);
+
+        return savedComment;
     }
 
     private void postCreate(Comment comment) {
