@@ -13,9 +13,9 @@ import com.issue.manager.repositories.project.DocumentationRepository;
 import com.issue.manager.repositories.project.TicketRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -29,23 +29,19 @@ public class CommentService {
     private final DocumentationRepository documentationRepository;
 
     public  List<Comment> getComments(QueryOptions queryOptions) {
-        Comment exampleComment = new Comment();
-        ExampleMatcher matcher = ExampleMatcher.matching();
+        List<Comment> allComments = new ArrayList<>();
 
         if (queryOptions.getFilters() != null) {
             for (Filter filter : queryOptions.getFilters()) {
-                if ("reference".equals(filter.getField())) {
-                    exampleComment.setReference((String) filter.getValue());
-                    matcher = matcher.withMatcher("reference", ExampleMatcher.GenericPropertyMatchers.exact());
+                if ("id".equals(filter.getField())) {
+                    List<String> ids = (List<String>) filter.getValue();
+
+                    allComments.addAll(commentRepository.findAllById(ids));
                 }
             }
         }
 
-        Example<Comment> example = Example.of(exampleComment, matcher);
-
-        List<Comment> all = commentRepository.findAll(example);
-
-        return all;
+        return allComments;
     }
 
     public Comment getComment(String id) {
