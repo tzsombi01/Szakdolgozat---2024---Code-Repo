@@ -28,6 +28,9 @@ public class DocumentationService {
                 if ("project".equals(filter.getField())) {
                     exampleDocumentation.setProject((String) filter.getValue());
                     matcher = matcher.withMatcher("project", ExampleMatcher.GenericPropertyMatchers.exact());
+                } else if ("name".equals(filter.getField())) {
+                    exampleDocumentation.setName((String) filter.getValue());
+                    matcher = matcher.withMatcher("name", ExampleMatcher.GenericPropertyMatchers.contains().ignoreCase(true));
                 }
             }
         }

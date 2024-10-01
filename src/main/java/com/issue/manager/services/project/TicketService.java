@@ -34,6 +34,9 @@ public class TicketService {
                 if ("project".equals(filter.getField())) {
                     exampleTicket.setProject((String) filter.getValue());
                     matcher = matcher.withMatcher("project", ExampleMatcher.GenericPropertyMatchers.exact());
+                } else if ("name".equals(filter.getField())) {
+                    exampleTicket.setName((String) filter.getValue());
+                    matcher = matcher.withMatcher("name", ExampleMatcher.GenericPropertyMatchers.contains().ignoreCase(true));
                 }
             }
         }

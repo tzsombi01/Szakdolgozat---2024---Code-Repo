@@ -2,7 +2,9 @@ package com.issue.manager.services.project;
 
 import com.issue.manager.inputs.project.ProjectInput;
 import com.issue.manager.models.base.User;
+import com.issue.manager.models.core.Filter;
 import com.issue.manager.models.core.QueryOptions;
+import com.issue.manager.models.project.Discussion;
 import com.issue.manager.models.project.Project;
 import com.issue.manager.models.project.Status;
 import com.issue.manager.models.project.StatusType;
@@ -11,8 +13,7 @@ import com.issue.manager.repositories.project.StatusRepository;
 import com.issue.manager.utils.GitHubService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.*;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -29,9 +30,23 @@ public class ProjectService {
     private final StatusRepository statusRepository;
 
     public Page<Project> getProjects(QueryOptions queryOptions) {
-        List<Project> all = projectRepository.findAll();
+        Project exampleProject = new Project();
+        ExampleMatcher matcher = ExampleMatcher.matching();
 
-        return new PageImpl<>(all);
+        if (queryOptions.getFilters() != null) {
+            for (Filter filter : queryOptions.getFilters()) {
+                if ("name".equals(filter.getField())) {
+                    exampleProject.setName((String) filter.getValue());
+                    matcher = matcher.withMatcher("name", ExampleMatcher.GenericPropertyMatchers.contains().ignoreCase(true));
+                }
+            }
+        }
+
+        Example<Project> example = Example.of(exampleProject, matcher);
+
+        Pageable pageable = PageRequest.of(queryOptions.getSkip(), queryOptions.getTake() > 0 ? queryOptions.getTake() : 10);
+
+        return projectRepository.findAll(example, pageable);
     }
 
     public Project getProject(String id) {

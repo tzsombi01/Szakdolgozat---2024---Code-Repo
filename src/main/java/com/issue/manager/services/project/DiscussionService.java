@@ -28,6 +28,9 @@ public class DiscussionService {
                 if ("project".equals(filter.getField())) {
                     exampleDiscussion.setProject((String) filter.getValue());
                     matcher = matcher.withMatcher("project", ExampleMatcher.GenericPropertyMatchers.exact());
+                } else if ("name".equals(filter.getField())) {
+                    exampleDiscussion.setName((String) filter.getValue());
+                    matcher = matcher.withMatcher("name", ExampleMatcher.GenericPropertyMatchers.contains().ignoreCase(true));
                 }
             }
         }
