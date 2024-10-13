@@ -29,20 +29,14 @@ public class InviteController {
     }
 
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public Invite createInvite(@RequestBody InviteInput inviteInput) {
-        return inviteService.createInvite(inviteInput);
-    }
-
-    @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public Invite editInvite(@PathVariable String id, @RequestBody InviteInput inviteInput) {
-        return inviteService.editInvite(id, inviteInput);
+    public Invite acceptInvite(@RequestBody String id) {
+        return inviteService.acceptInvite(id);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public Invite deleteInvite(@PathVariable String id) {
-        return inviteService.deleteInvite(id);
+    public Invite declineInvite(@PathVariable String id) {
+        return inviteService.declineInvite(id);
     }
 }

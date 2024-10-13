@@ -99,6 +99,8 @@ public class AuthenticationService {
 
                 notificationRepository.save(notification);
             }
+
+            inviteEventRepository.delete(event);
         }
     }
 
