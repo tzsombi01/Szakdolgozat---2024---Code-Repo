@@ -9,6 +9,7 @@ import com.issue.manager.models.core.QueryOptions;
 import com.issue.manager.models.project.*;
 import com.issue.manager.repositories.base.UserRepository;
 import com.issue.manager.repositories.project.InviteEventRepository;
+import com.issue.manager.repositories.project.NotificationRepository;
 import com.issue.manager.repositories.project.ProjectRepository;
 import com.issue.manager.utils.EmailService;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +31,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final InviteEventRepository inviteEventRepository;
     private final ProjectRepository projectRepository;
+    private final NotificationRepository notificationRepository;
     private final EmailService emailService;
 
     public UserResponseDTO getMe() {
@@ -108,6 +110,8 @@ public class UserService {
                     MessageConstants.INVITED_TO_PROJECT_MESSAGE,
                     false
             );
+
+            notificationRepository.save(notification);
         }
     }
 }

@@ -5,13 +5,21 @@ import com.issue.manager.inputs.base.UserInput;
 import com.issue.manager.inputs.dtos.AuthenticationRequest;
 import com.issue.manager.inputs.dtos.AuthenticationResponse;
 import com.issue.manager.models.base.User;
+import com.issue.manager.models.constants.MessageConstants;
+import com.issue.manager.models.project.*;
 import com.issue.manager.repositories.base.UserRepository;
+import com.issue.manager.repositories.project.InviteEventRepository;
+import com.issue.manager.repositories.project.InviteRepository;
+import com.issue.manager.repositories.project.NotificationRepository;
+import com.issue.manager.repositories.project.ProjectRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Optional;
 import java.util.regex.Pattern;
 
 @Service
@@ -19,6 +27,14 @@ import java.util.regex.Pattern;
 public class AuthenticationService {
 
     private final UserRepository userRepository;
+
+    private final InviteEventRepository inviteEventRepository;
+
+    private final InviteRepository inviteRepository;
+
+    private final NotificationRepository notificationRepository;
+
+    private final ProjectRepository projectRepository;
 
     private final PasswordEncoder passwordEncoder;
 
@@ -55,12 +71,35 @@ public class AuthenticationService {
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
-        userRepository.save(user);
+        User savedUser = userRepository.save(user);
 
-        String jwtToken = jwtService.generateToken(user);
+        createInvites(savedUser);
+
+        String jwtToken = jwtService.generateToken(savedUser);
         return AuthenticationResponse.builder()
                 .token(jwtToken)
                 .build();
+    }
+
+    private void createInvites(User user) {
+        List<InviteEvent> allByEmail = inviteEventRepository.findAllByEmail(user.getEmail());
+
+        for (InviteEvent event : allByEmail) {
+            if (projectRepository.existsById(event.getProject())) {
+                inviteRepository.save(new Invite(user.getId(), event.getProject()));
+
+                Notification notification = new Notification(
+                        user.getId(),
+                        NotificationType.ACCEPT,
+                        "project-invites",
+                        MessageConstants.INVITED_TO_PROJECT_NOTIFICATION_NAME,
+                        MessageConstants.INVITED_TO_PROJECT_MESSAGE,
+                        false
+                );
+
+                notificationRepository.save(notification);
+            }
+        }
     }
 
     public AuthenticationResponse login(AuthenticationRequest request) {

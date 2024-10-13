@@ -5,6 +5,7 @@ public class MessageConstants {
     public static final String INVITED_TO_PROJECT_MESSAGE = "You are invited to %s project, would you like to accept the invitation?";
 
     public static final String INVITED_TO_PROJECT_NOTIFICATION_NAME = "Invited to project";
+
     public static final String INVITED_TO_PROJECT_SUBJECT = "You have been invited to a new project!";
 
     public static final String INVITED_TO_PROJECT_EMAIL_MESSAGE =

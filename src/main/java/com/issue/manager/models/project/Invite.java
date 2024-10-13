@@ -1,5 +1,6 @@
 package com.issue.manager.models.project;
 
+
 import com.issue.manager.models.Entity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -13,15 +14,12 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @AllArgsConstructor
 @RequiredArgsConstructor
 @FieldNameConstants
-@Document(collection = Notification.NOTIFICATION_COLLECTION_NAME)
-public class Notification extends Entity {
+@Document(collection = Invite.INVITE_COLLECTION_NAME)
+public class Invite extends Entity {
 
-    public static final String NOTIFICATION_COLLECTION_NAME = "notifications";
+    public static final String INVITE_COLLECTION_NAME = "invites";
 
-    private String target;
-    private NotificationType notificationType;
-    private String path;
-    private String name;
-    private String message;
-    private boolean seen;
+    private String user;
+
+    private String project;
 }
