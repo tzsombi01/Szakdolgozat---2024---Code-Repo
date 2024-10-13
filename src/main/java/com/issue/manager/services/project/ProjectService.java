@@ -14,6 +14,7 @@ import com.issue.manager.utils.GitHubService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.*;
+import org.springframework.data.util.Streamable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -33,7 +34,7 @@ public class ProjectService {
         Project exampleProject = new Project();
         ExampleMatcher matcher = ExampleMatcher.matching();
 
-        if (queryOptions.getFilters() != null) {
+        if (queryOptions.getFilters() != null && !queryOptions.getFilters().isEmpty()) {
             for (Filter filter : queryOptions.getFilters()) {
                 if ("name".equals(filter.getField())) {
                     exampleProject.setName((String) filter.getValue());
@@ -46,7 +47,11 @@ public class ProjectService {
 
         Pageable pageable = PageRequest.of(queryOptions.getSkip(), queryOptions.getTake() > 0 ? queryOptions.getTake() : 10);
 
-        return projectRepository.findAll(example, pageable);
+        Page<Project> projects = projectRepository.findAll(example, pageable);
+
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        return new PageImpl<>(projects.getContent().stream().filter(project -> project.getUsers().contains(user.getId())).toList());
     }
 
     public Project getProject(String id) {

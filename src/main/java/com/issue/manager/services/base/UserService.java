@@ -101,13 +101,15 @@ public class UserService {
             }
 
             User user = optionalUser.get();
+            Project project = projectRepository.findById(inviteUsersRequest.getProjectId())
+                    .orElseThrow(() -> new RuntimeException("Project was not found by id: " + inviteUsersRequest.getProjectId()));
 
             Notification notification = new Notification(
                     user.getId(),
                     NotificationType.ACCEPT,
-                    "project-invites",
+                    "projects",
                     MessageConstants.INVITED_TO_PROJECT_NOTIFICATION_NAME,
-                    MessageConstants.INVITED_TO_PROJECT_MESSAGE,
+                    String.format(MessageConstants.INVITED_TO_PROJECT_MESSAGE, project.getName()),
                     false
             );
 
