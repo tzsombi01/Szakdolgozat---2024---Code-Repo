@@ -22,6 +22,7 @@ public class TicketInput extends ModelInput<Ticket> {
     private List<String> statuses;
     private List<String> comments; // Comment references
     private List<String> mentionedInCommits; // Commit references
+    private boolean closed;
 
     public Ticket toModel(Ticket model) {
         model.setName(name);
@@ -33,6 +34,7 @@ public class TicketInput extends ModelInput<Ticket> {
         model.setComments(comments);
         model.setMentionedInCommits(mentionedInCommits);
         model.setCreatedAt(new Date().getTime());
+        model.setClosed(closed);
 
         return model;
     }

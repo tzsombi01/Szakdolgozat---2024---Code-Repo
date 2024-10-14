@@ -31,6 +31,7 @@ public class Ticket extends Entity {
     private List<String> statuses;
     private List<String> comments; // Comment references
     private List<String> mentionedInCommits; // Commit references
+    private boolean closed;
 
     public void addComment(String id) {
         if (comments == null) {
