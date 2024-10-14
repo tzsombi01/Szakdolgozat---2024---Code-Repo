@@ -10,6 +10,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Log4j2
 @RestController
 @RequestMapping("/api/projects")
@@ -29,6 +31,13 @@ public class ProjectController {
     public Project getProject(@PathVariable String id) {
         return projectService.getProject(id);
     }
+
+    @PostMapping("/byIds")
+    @ResponseStatus(HttpStatus.OK)
+    public List<Project> getProjects(@RequestBody List<String> ids) {
+        return projectService.getProjectsByIds(ids);
+    }
+
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)

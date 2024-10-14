@@ -9,6 +9,7 @@ import com.issue.manager.models.core.QueryOptions;
 import com.issue.manager.models.project.*;
 import com.issue.manager.repositories.base.UserRepository;
 import com.issue.manager.repositories.project.InviteEventRepository;
+import com.issue.manager.repositories.project.InviteRepository;
 import com.issue.manager.repositories.project.NotificationRepository;
 import com.issue.manager.repositories.project.ProjectRepository;
 import com.issue.manager.utils.EmailService;
@@ -32,6 +33,7 @@ public class UserService {
     private final InviteEventRepository inviteEventRepository;
     private final ProjectRepository projectRepository;
     private final NotificationRepository notificationRepository;
+    private final InviteRepository inviteRepository;
     private final EmailService emailService;
 
     public UserResponseDTO getMe() {
@@ -104,6 +106,8 @@ public class UserService {
             Project project = projectRepository.findById(inviteUsersRequest.getProjectId())
                     .orElseThrow(() -> new RuntimeException("Project was not found by id: " + inviteUsersRequest.getProjectId()));
 
+            inviteRepository.save(new Invite(user.getId(), project.getId()));
+
             Notification notification = new Notification(
                     user.getId(),
                     NotificationType.ACCEPT,
@@ -114,6 +118,8 @@ public class UserService {
             );
 
             notificationRepository.save(notification);
+
+
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.issue.manager.services.project;
 
+import com.issue.manager.models.base.User;
 import com.issue.manager.models.core.Filter;
 import com.issue.manager.models.core.QueryOptions;
 import com.issue.manager.models.project.Invite;
@@ -9,6 +10,7 @@ import com.issue.manager.repositories.project.ProjectRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.*;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -27,6 +29,10 @@ public class InviteService {
             for (Filter filter : queryOptions.getFilters()) {
                 if ("user".equals(filter.getField())) {
                     exampleInvite.setUser((String) filter.getValue());
+                    matcher = matcher.withMatcher("user", ExampleMatcher.GenericPropertyMatchers.exact());
+                } else {
+                    User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+                    exampleInvite.setUser(user.getId());
                     matcher = matcher.withMatcher("user", ExampleMatcher.GenericPropertyMatchers.exact());
                 }
             }

@@ -61,6 +61,10 @@ public class ProjectService {
         return project;
     }
 
+    public List<Project> getProjectsByIds(List<String> ids) {
+        return projectRepository.findAllById(ids);
+    }
+
     public Project createProject(ProjectInput projectInput) {
         Project project = projectInput.toModel();
 
