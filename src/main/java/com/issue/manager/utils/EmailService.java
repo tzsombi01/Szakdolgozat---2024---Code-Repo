@@ -29,6 +29,7 @@ public class EmailService {
 
         Session session = Session.getDefaultInstance(props,
                 new jakarta.mail.Authenticator() {
+                    @Override
                     protected PasswordAuthentication getPasswordAuthentication() {
                         return new PasswordAuthentication(
                                 emailUsername,
@@ -63,7 +64,7 @@ public class EmailService {
     private MimeMessage composeMessage(Session session, String email, EmailType type, Map<String, Object> properties) throws MessagingException {
         MimeMessage message = new MimeMessage(session);
 
-        InternetAddress addressFrom = new InternetAddress(System.getenv("EMAIL_ADDRESS"));
+        InternetAddress addressFrom = new InternetAddress(emailUsername);
         message.setSender(addressFrom);
 
         switch (type) {

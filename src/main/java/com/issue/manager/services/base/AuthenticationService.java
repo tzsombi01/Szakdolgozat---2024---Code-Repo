@@ -88,12 +88,15 @@ public class AuthenticationService {
             if (projectRepository.existsById(event.getProject())) {
                 inviteRepository.save(new Invite(user.getId(), event.getProject()));
 
+                Project project = projectRepository.findById(event.getProject())
+                        .orElseThrow(() -> new RuntimeException("Project was not found by id: " + event.getProject()));
+
                 Notification notification = new Notification(
                         user.getId(),
                         NotificationType.ACCEPT,
-                        "project-invites",
+                        "project",
                         MessageConstants.INVITED_TO_PROJECT_NOTIFICATION_NAME,
-                        MessageConstants.INVITED_TO_PROJECT_MESSAGE,
+                        String.format(MessageConstants.INVITED_TO_PROJECT_MESSAGE, project.getName()),
                         false
                 );
 

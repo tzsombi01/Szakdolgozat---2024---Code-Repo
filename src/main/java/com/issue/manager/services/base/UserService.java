@@ -99,6 +99,7 @@ public class UserService {
                     continue;
                 } catch (Exception e) {
                     log.error("Email could not be sent to address: " + email);
+                    continue;
                 }
             }
 
