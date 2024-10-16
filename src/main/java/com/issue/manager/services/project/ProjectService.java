@@ -128,4 +128,15 @@ public class ProjectService {
 
         return project;
     }
+
+    public Project leaveProject(String id) {
+        Project project = projectRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Project was not found by id " + id));
+
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        project.deleteUser(user.getId());
+
+        return projectRepository.save(project);
+    }
 }

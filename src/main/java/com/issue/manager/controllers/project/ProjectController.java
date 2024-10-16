@@ -56,4 +56,10 @@ public class ProjectController {
     public Project deleteProject(@PathVariable String id) {
         return projectService.deleteProject(id);
     }
+
+    @PostMapping("/leave/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public Project leaveProject(@PathVariable String id) {
+        return projectService.leaveProject(id);
+    }
 }
