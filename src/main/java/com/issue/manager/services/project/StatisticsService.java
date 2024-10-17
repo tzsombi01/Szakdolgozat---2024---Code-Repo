@@ -11,10 +11,7 @@ import com.issue.manager.utils.GitHubService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -60,14 +57,19 @@ public class StatisticsService {
                             commitsPerProjectResponse.setName(user.getUsernameUserName());
                             int numberOfCommits = 0;
                             commitsPerProjectResponse.setNumberOfCommits(numberOfCommits);
-                            for (Map<String, Object> commitInfo : publicRepositoryCommits) {
-                                var authorInfo = (Map<String, Object>) commitInfo.get(KEY_TO_AUTHOR);
-                                String commitAuthor = (String) authorInfo.get(KEY_TO_LOGIN);
 
-                                if (user.getGitUserNames().contains(commitAuthor)) {
-                                    numberOfCommits += 1;
+                            for (Map<String, Object> commitInfo : publicRepositoryCommits) {
+                                var authorInfo = (Map<String, Object>) commitInfo.getOrDefault(KEY_TO_AUTHOR, new HashMap<>());
+
+                                if (authorInfo != null && !authorInfo.isEmpty()) {
+                                    String commitAuthor = (String) authorInfo.get(KEY_TO_LOGIN);
+
+                                    if (user.getGitUserNames().contains(commitAuthor)) {
+                                        numberOfCommits += 1;
+                                    }
                                 }
                             }
+
                             commitsPerProjectResponse.setNumberOfCommits(numberOfCommits);
                             statisticsInfos.add(commitsPerProjectResponse);
                         }

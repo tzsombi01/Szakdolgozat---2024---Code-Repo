@@ -1,8 +1,11 @@
 package com.issue.manager.utils;
 
+import com.issue.manager.models.base.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpHeaders;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
@@ -47,17 +50,30 @@ public class GitHubService {
     }
 
     public Map<String, Object> getPublicRepositoryInfo(String repoName) {
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String accessToken = user.getAccessToken();
+
         String repoStrippedName = getRepositoryName(repoName);
         String ownerName = getOwnerName(repoName);
         String repoUrlFull = githubApiUrl + "/" + ownerName + "/" + repoStrippedName;
         WebClient webClient = webClientBuilder.build();
         Map<String, Object> repo = null;
         try {
-             repo = webClient.get()
-                    .uri(repoUrlFull)
-                    .retrieve()
-                    .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {})
-                    .block();
+            if (accessToken != null && !accessToken.isBlank()) {
+                repo = webClient.get()
+                        .uri(repoUrlFull)
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
+                        .retrieve()
+                        .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {})
+                        .block();
+            } else {
+                repo = webClient.get()
+                        .uri(repoUrlFull)
+                        .retrieve()
+                        .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {
+                        })
+                        .block();
+            }
 
             if (repo == null || repo.get("private") == null || Boolean.TRUE.equals(repo.get("private"))) {
                 throw new IllegalArgumentException("The repository is not public.");
@@ -70,14 +86,28 @@ public class GitHubService {
     }
 
     public List<Map<String, Object>> getPublicRepositoryCommits(String urlToCommits) {
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        String accessToken = user.getAccessToken();
+
         WebClient webClient = webClientBuilder.build();
         List<Map<String, Object>> repo = null;
         try {
-            repo = webClient.get()
-                    .uri(urlToCommits)
-                    .retrieve()
-                    .bodyToMono(new ParameterizedTypeReference<List<Map<String, Object>>>() {})
-                    .block();
+            if (accessToken != null && !accessToken.isEmpty()) {
+                repo = webClient.get()
+                        .uri(urlToCommits)
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
+                        .retrieve()
+                        .bodyToMono(new ParameterizedTypeReference<List<Map<String, Object>>>() {})
+                        .block();
+            } else {
+                repo = webClient.get()
+                        .uri(urlToCommits)
+                        .retrieve()
+                        .bodyToMono(new ParameterizedTypeReference<List<Map<String, Object>>>() {})
+                        .block();
+            }
+
         } catch (WebClientResponseException.NotFound e) {
             throw new IllegalArgumentException("The repository does not exist or not public");
         }
