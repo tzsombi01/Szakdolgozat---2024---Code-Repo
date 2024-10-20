@@ -50,30 +50,17 @@ public class GitHubService {
     }
 
     public Map<String, Object> getPublicRepositoryInfo(String repoName) {
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        String accessToken = user.getAccessToken();
-
         String repoStrippedName = getRepositoryName(repoName);
         String ownerName = getOwnerName(repoName);
         String repoUrlFull = githubApiUrl + "/" + ownerName + "/" + repoStrippedName;
         WebClient webClient = webClientBuilder.build();
         Map<String, Object> repo = null;
         try {
-            if (accessToken != null && !accessToken.isBlank()) {
                 repo = webClient.get()
                         .uri(repoUrlFull)
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
                         .retrieve()
                         .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {})
                         .block();
-            } else {
-                repo = webClient.get()
-                        .uri(repoUrlFull)
-                        .retrieve()
-                        .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {
-                        })
-                        .block();
-            }
 
             if (repo == null || repo.get("private") == null || Boolean.TRUE.equals(repo.get("private"))) {
                 throw new IllegalArgumentException("The repository is not public.");
