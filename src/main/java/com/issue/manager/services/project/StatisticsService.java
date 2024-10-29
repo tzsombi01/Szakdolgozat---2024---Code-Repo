@@ -41,7 +41,7 @@ public class StatisticsService {
             case COMMITS_PER_PROJECT -> {
                 Object keyToCommits = publicRepositoryInfo.get(KEY_TO_COMMITS);
                 if (keyToCommits != null) {
-                    List<Map<String, Object>> publicRepositoryCommits = gitHubService.getPublicRepositoryCommits(getCommitsUrl((String) keyToCommits));
+                    List<Map<String, Object>> publicRepositoryCommits = gitHubService.getAllRepositoryCommits(getCommitsUrl((String) keyToCommits));
                     if (publicRepositoryCommits != null) {
                         var statisticsInfos = new ArrayList<>();
                         for (String userId : programmerStatisticsRequest.getIds()) {
@@ -77,6 +77,11 @@ public class StatisticsService {
                         programmerStatisticsResponse.setStatisticsInfos(statisticsInfos);
                     }
                 }
+            }
+            case DAILY_COMMITS_FOR_YEAR -> {
+                Long fromTimestamp = programmerStatisticsRequest.getFrom();
+
+
             }
             default -> {
 //                throw new RuntimeException("Not supported statistic type!");

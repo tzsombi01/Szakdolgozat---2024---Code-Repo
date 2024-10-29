@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -72,33 +73,48 @@ public class GitHubService {
         return repo;
     }
 
-    public List<Map<String, Object>> getPublicRepositoryCommits(String urlToCommits) {
+    public List<Map<String, Object>> getAllRepositoryCommits(String urlToCommits) {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
         String accessToken = user.getAccessToken();
 
         WebClient webClient = webClientBuilder.build();
-        List<Map<String, Object>> repo = null;
+        List<Map<String, Object>> allCommits = new ArrayList<>();
+        int page = 1;
+        int perPage = 50;
+
         try {
-            if (accessToken != null && !accessToken.isEmpty()) {
-                repo = webClient.get()
-                        .uri(urlToCommits)
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
-                        .retrieve()
-                        .bodyToMono(new ParameterizedTypeReference<List<Map<String, Object>>>() {})
-                        .block();
-            } else {
-                repo = webClient.get()
-                        .uri(urlToCommits)
-                        .retrieve()
-                        .bodyToMono(new ParameterizedTypeReference<List<Map<String, Object>>>() {})
-                        .block();
+            while (true) {
+                String paginatedUrl = urlToCommits + "?page=" + page + "&per_page=" + perPage;
+                List<Map<String, Object>> commitsPage;
+
+                if (accessToken != null && !accessToken.isEmpty()) {
+                    commitsPage = webClient.get()
+                            .uri(paginatedUrl)
+                            .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
+                            .retrieve()
+                            .bodyToMono(new ParameterizedTypeReference<List<Map<String, Object>>>() {})
+                            .block();
+                } else {
+                    commitsPage = webClient.get()
+                            .uri(paginatedUrl)
+                            .retrieve()
+                            .bodyToMono(new ParameterizedTypeReference<List<Map<String, Object>>>() {})
+                            .block();
+                }
+
+                if (commitsPage == null || commitsPage.isEmpty()) {
+                    break;  // No more commits to retrieve
+                }
+
+                allCommits.addAll(commitsPage);
+                page++;
             }
 
         } catch (WebClientResponseException.NotFound e) {
-            throw new IllegalArgumentException("The repository does not exist or not public");
+            throw new IllegalArgumentException("The repository does not exist or is not public");
         }
 
-        return repo;
+        return allCommits;
     }
+
 }

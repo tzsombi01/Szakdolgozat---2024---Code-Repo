@@ -13,7 +13,7 @@ import java.util.List;
 public class ProgrammerStatisticsResponse {
     private List<String> ids; // User references
     private StatisticsType type;
-    private Instant from;
-    private Instant until;
+    private Long from;
+    private Long until;
     private List<Object> statisticsInfos;
 }
