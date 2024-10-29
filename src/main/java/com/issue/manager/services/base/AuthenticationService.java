@@ -45,12 +45,12 @@ public class AuthenticationService {
     public AuthenticationResponse register(UserInput request) {
         String firstName = request.getFirstName();
         if(firstName == null || firstName.length() == 0) {
-            throw new IllegalArgumentException("Name must be at least one caharcter long");
+            throw new IllegalArgumentException("Name must be at least one character long");
         }
 
         String lastName = request.getLastName();
         if(lastName == null || lastName.length() == 0) {
-            throw new IllegalArgumentException("Name must be at least one caharcter long");
+            throw new IllegalArgumentException("Name must be at least one character long");
         }
 
         String email = request.getEmail();
