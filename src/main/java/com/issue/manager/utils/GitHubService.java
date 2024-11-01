@@ -117,4 +117,32 @@ public class GitHubService {
         return allCommits;
     }
 
+    public Map<String, Object> getSingleCommitInfo(String urlToCommit) {
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String accessToken = user.getAccessToken();
+
+        WebClient webClient = webClientBuilder.build();
+        Map<String, Object> commitInfo = null;
+        try {
+            if (accessToken != null && !accessToken.isEmpty()) {
+                commitInfo = webClient.get()
+                            .uri(urlToCommit)
+                            .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
+                            .retrieve()
+                            .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {})
+                            .block();
+            } else {
+                commitInfo = webClient.get()
+                            .uri(urlToCommit)
+                            .retrieve()
+                            .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {})
+                            .block();
+            }
+        } catch (WebClientResponseException.NotFound e) {
+            throw new IllegalArgumentException("The repository does not exist or is not public");
+        }
+
+        return commitInfo;
+    }
+
 }

@@ -12,7 +12,11 @@ import com.issue.manager.utils.GitHubService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -23,9 +27,13 @@ public class StatisticsService {
     private final UserRepository userRepository;
 
     private static final String KEY_TO_COMMITS = "commits_url";
-    private static final String KEY_TO_COMMIT_CHANGE_SIZE = "commits_url";
+    private static final String KEY_TO_COMMIT_CHANGE_SIZE = "stats";
+    private static final String KEY_TO_COMMIT_TOTAL = "total";
+    private static final String KEY_TO_COMMIT_FOR_DATE = "commit";
+    private static final String KEY_TO_DATE = "date";
     private static final String KEY_TO_AUTHOR = "author";
     private static final String KEY_TO_LOGIN = "login";
+    private static final String KEY_TO_COMMIT_URL = "url";
 
     public ProgrammerStatisticsResponse getProgrammerStatistics(String id, ProgrammerStatisticsRequest programmerStatisticsRequest) {
         Project project = projectRepository.findById(id)
@@ -46,16 +54,12 @@ public class StatisticsService {
                     List<Map<String, Object>> publicRepositoryCommits = gitHubService.getAllRepositoryCommits(getCommitsUrl((String) keyToCommits));
                     if (publicRepositoryCommits != null) {
                         var statisticsInfos = new ArrayList<>();
-                        for (String userId : programmerStatisticsRequest.getIds()) {
-                            Optional<User> optionalUser = userRepository.findById(userId);
 
-                            if (optionalUser.isEmpty()) {
-                                continue;
-                            }
+                        List<User> users = userRepository.findAllById(programmerStatisticsRequest.getIds());
 
-                            User user = optionalUser.get();
+                        for (User user : users) {
                             var commitsPerProjectResponse = new ProgrammerStatisticsCommitsPerProjectResponse();
-                            commitsPerProjectResponse.setId(userId);
+                            commitsPerProjectResponse.setId(user.getId());
                             commitsPerProjectResponse.setName(user.getUsernameUserName());
                             int numberOfCommits = 0;
                             commitsPerProjectResponse.setNumberOfCommits(numberOfCommits);
@@ -86,16 +90,12 @@ public class StatisticsService {
                     List<Map<String, Object>> publicRepositoryCommits = gitHubService.getAllRepositoryCommits(getCommitsUrl((String) keyToCommits));
                     if (publicRepositoryCommits != null) {
                         var statisticsInfos = new ArrayList<>();
-                        for (String userId : programmerStatisticsRequest.getIds()) {
-                            Optional<User> optionalUser = userRepository.findById(userId);
 
-                            if (optionalUser.isEmpty()) {
-                                continue;
-                            }
+                        List<User> users = userRepository.findAllById(programmerStatisticsRequest.getIds());
 
-                            User user = optionalUser.get();
+                        for (User user : users) {
                             var averageCommitSizeResponse = new ProgrammerStatisticsAverageCommitSizeResponse();
-                            averageCommitSizeResponse.setId(userId);
+                            averageCommitSizeResponse.setId(user.getId());
                             averageCommitSizeResponse.setName(user.getUsernameUserName());
                             double averageCommitSize = 0.0;
                             int numberOfCommits = 0;
@@ -103,15 +103,18 @@ public class StatisticsService {
 
                             for (Map<String, Object> commitInfo : publicRepositoryCommits) {
                                 var authorInfo = (Map<String, Object>) commitInfo.getOrDefault(KEY_TO_AUTHOR, new HashMap<>());
-                                var commitSizeInfo = (Map<String, Object>) commitInfo.getOrDefault(KEY_TO_COMMIT_CHANGE_SIZE, new HashMap<>());
 
                                 if (authorInfo != null && !authorInfo.isEmpty()) {
                                     String commitAuthor = (String) authorInfo.get(KEY_TO_LOGIN);
 
                                     if (user.getGitUserNames().contains(commitAuthor)) {
+                                        String commitUrl = (String) commitInfo.get(KEY_TO_COMMIT_URL);
+                                        Map<String, Object> singleCommitInfo = gitHubService.getSingleCommitInfo(commitUrl);
+
+                                        Map<String, Object> stats = (Map<String, Object>) singleCommitInfo.getOrDefault(KEY_TO_COMMIT_CHANGE_SIZE, new HashMap<>());
+                                        int total = (int) stats.getOrDefault(KEY_TO_COMMIT_TOTAL, 0);
+                                        averageCommitSize += total;
                                         numberOfCommits += 1;
-                                        // KEY_TO_COMMIT_CHANGE_SIZE
-                                        averageCommitSize = 0;
                                     }
                                 }
                             }
@@ -119,69 +122,69 @@ public class StatisticsService {
                             averageCommitSizeResponse.setAverageSize(numberOfCommits != 0 ? averageCommitSize / numberOfCommits : 0);
                             statisticsInfos.add(averageCommitSizeResponse);
                         }
-
                         programmerStatisticsResponse.setStatisticsInfos(statisticsInfos);
                     }
                 }
             }
             case DAILY_COMMITS_FOR_YEAR -> {
                 Long fromTimestamp = programmerStatisticsRequest.getFrom();
-                Date from = new Date(fromTimestamp); // Convert Long to Date for processing
-                Calendar calendar = Calendar.getInstance();
-                calendar.setTime(from);
-                calendar.add(Calendar.YEAR, 1);
-                Date until = calendar.getTime();
+                Instant from = Instant.ofEpochMilli(fromTimestamp);
 
-                // IMPORTANT -> 'commit' -> 'author' -> 'date'
-                // https://api.github.com/repos/tzsombi01/Szakdolgozat-2024-frontend/commits/158d2d90176d621eef213374e969ddfc89be7baa
-
-                // Fetch all commits between 'from' and 'until'
                 Object keyToCommits = publicRepositoryInfo.get(KEY_TO_COMMITS);
                 if (keyToCommits != null) {
                     List<Map<String, Object>> publicRepositoryCommits = gitHubService.getAllRepositoryCommits(getCommitsUrl((String) keyToCommits));
 
                     if (publicRepositoryCommits != null) {
-                        int startWeekday = calendar.get(Calendar.DAY_OF_WEEK) - 1;
+                        int startWeekday = from.atZone(ZoneId.systemDefault()).getDayOfWeek().getValue() % 7;
                         List<Map<String, Object>> structuredData = new ArrayList<>();
 
-                        // Adding empty tiles before the first day of the year
-                        for (int i = 0; i < startWeekday; i++) {
-                            structuredData.add(Map.of(
-                                    "x", i,
-                                    "y", 52,
-                                    "value", null,
-                                    "date", null
-                            ));
+                        Optional<User> optionalUser = Optional.empty();
+                        if (!programmerStatisticsRequest.getIds().isEmpty()) {
+                            optionalUser = userRepository.findById(programmerStatisticsRequest.getIds().get(0));
+
+                            if (optionalUser.isEmpty()) {
+                                programmerStatisticsResponse.setStatisticsInfos(List.of());
+                                return programmerStatisticsResponse;
+                            }
                         }
 
-                        // Initialize the commit data structure
-                        Map<Date, Integer> dailyCommitCounts = new HashMap<>();
+                        User user = optionalUser.get();
+                        Map<Instant, Integer> dailyCommitCounts = new HashMap<>();
 
-                        // Populate dailyCommitCounts with the commits data
-                        for (Map<String, Object> commitInfo : publicRepositoryCommits) {
+                        List<Map<String, Object>> publicRepositoryCommitsFromBaseTime = publicRepositoryCommits.stream()
+                                .filter(commitInfo -> {
+                                    Map<String, Object> authorInfo = (Map<String, Object>) commitInfo.getOrDefault(KEY_TO_AUTHOR, new HashMap<>());
+                                    if (authorInfo != null && !authorInfo.isEmpty()) {
+                                        Map<String, Object> commitInfoForAuthorAndDate = (Map<String, Object>) commitInfo.get(KEY_TO_COMMIT_FOR_DATE);
+                                        Map<String, Object> authorAndDateInfo = (Map<String, Object>) commitInfoForAuthorAndDate.get(KEY_TO_AUTHOR);
+                                        String commitTimeStamp = (String) authorAndDateInfo.get(KEY_TO_DATE);
+                                        Instant commitInstant = Instant.parse(commitTimeStamp);
+
+                                        return commitInstant.isAfter(from);
+                                    }
+                                    return false;
+                                })
+                                .toList();
+
+                        for (Map<String, Object> commitInfo : publicRepositoryCommitsFromBaseTime) {
                             Map<String, Object> authorInfo = (Map<String, Object>) commitInfo.getOrDefault(KEY_TO_AUTHOR, new HashMap<>());
                             if (authorInfo != null && !authorInfo.isEmpty()) {
                                 String commitAuthor = (String) authorInfo.get(KEY_TO_LOGIN);
-                                Long commitTimestamp = (Long) commitInfo.get("commit_date");
-                                Date commitDate = new Date(commitTimestamp); // Convert to Date and ensure day precision
+                                Map<String, Object> commitInfoForAuthorAndDate = (Map<String, Object>) commitInfo.get(KEY_TO_COMMIT_FOR_DATE);
+                                Map<String, Object> authorAndDateInfo = (Map<String, Object>) commitInfoForAuthorAndDate.get(KEY_TO_AUTHOR);
+                                String commitTimeStamp = (String) authorAndDateInfo.get(KEY_TO_DATE);
+                                Instant commitInstant = Instant.parse(commitTimeStamp);
+                                Instant dayPrecisionInstant = commitInstant.atZone(ZoneOffset.UTC).toLocalDate().atStartOfDay(ZoneOffset.UTC).toInstant();
 
-                                for (String userId : programmerStatisticsRequest.getIds()) {
-                                    Optional<User> optionalUser = userRepository.findById(userId);
-                                    if (optionalUser.isEmpty()) continue;
-                                    User user = optionalUser.get();
-
-                                    if (user.getGitUserNames().contains(commitAuthor)) {
-//                                        commitDate = stripTime(commitDate);
-                                        dailyCommitCounts.merge(commitDate, 1, Integer::sum);
-                                    }
+                                if (user.getGitUserNames().contains(commitAuthor)) {
+                                    dailyCommitCounts.merge(dayPrecisionInstant, 1, Integer::sum);
                                 }
                             }
                         }
 
-                        // Generate commit data for each day over the last year
                         for (int dayOffset = 0; dayOffset < 365; dayOffset++) {
-                            Date currentDate = new Date(from.getTime() + dayOffset * (1000 * 60 * 60 * 24)); // Add days
-                            int dayOfWeek = currentDate.getDay();
+                            Instant currentDate = from.plusSeconds(dayOffset * (long) 86400).atZone(ZoneOffset.UTC).toLocalDate().atStartOfDay(ZoneOffset.UTC).toInstant();
+                            int dayOfWeek = currentDate.atZone(ZoneId.systemDefault()).getDayOfWeek().getValue() % 7;
                             int weekOfYear = (startWeekday + dayOffset) / 7;
                             Integer commitCount = dailyCommitCounts.getOrDefault(currentDate, 0);
 
@@ -189,26 +192,24 @@ public class StatisticsService {
                                     "x", dayOfWeek,
                                     "y", 52 - weekOfYear,
                                     "value", commitCount,
-                                    "date", currentDate.getTime()
+                                    "date", currentDate.toEpochMilli()
                             ));
                         }
 
                         // Adding empty tiles at the end to fill the row
-                        Calendar lastCalendar = Calendar.getInstance();
-                        lastCalendar.setTime(from);
-                        lastCalendar.add(Calendar.DAY_OF_YEAR, 365);
-                        int lastWeekday = lastCalendar.get(Calendar.DAY_OF_WEEK) - 1;
+                        Instant lastDate = from.plusSeconds(365 * 86400).atZone(ZoneOffset.UTC).toLocalDate().atStartOfDay(ZoneOffset.UTC).toInstant();
+                        int lastWeekday = lastDate.atZone(ZoneId.systemDefault()).getDayOfWeek().getValue() % 7;
                         int remainingDays = 6 - lastWeekday;
                         for (int i = 0; i < remainingDays; i++) {
                             structuredData.add(Map.of(
                                     "x", (lastWeekday + i + 1) % 7,
                                     "y", 0,
-                                    "value", null,
-                                    "date", null
+                                    "value", 0,
+                                    "date", 1712102400000L
                             ));
                         }
 
-//                        programmerStatisticsResponse.setStatisticsInfos(structuredData);
+                        programmerStatisticsResponse.setStatisticsInfos(Collections.singletonList(structuredData));
                     }
                 }
             }
