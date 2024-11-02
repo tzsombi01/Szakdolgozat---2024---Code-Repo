@@ -18,7 +18,6 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -36,6 +35,7 @@ public class StatisticsService {
     private static final String KEY_TO_AUTHOR = "author";
     private static final String KEY_TO_LOGIN = "login";
     private static final String KEY_TO_COMMIT_URL = "url";
+    private final long DAY_IN_MILLISECONDS = 1000 * 60 * 60 * 24;
 
     public ProgrammerStatisticsResponse getProgrammerStatistics(String id, ProgrammerStatisticsRequest programmerStatisticsRequest) {
         Project project = projectRepository.findById(id)
@@ -100,11 +100,11 @@ public class StatisticsService {
                             averageCommitSizeResponse.setId(user.getId());
                             averageCommitSizeResponse.setName(user.getUsernameUserName());
                             double averageCommitSize = 0.0;
-                            int numberOfCommits = 0;
                             averageCommitSizeResponse.setAverageSize(averageCommitSize);
 
+                            int numberOfCommits = 0;
                             for (Map<String, Object> commitInfo : publicRepositoryCommits) {
-                                var authorInfo = (Map<String, Object>) commitInfo.getOrDefault(KEY_TO_AUTHOR, new HashMap<>());
+                                var authorInfo = getAuthorInfo(commitInfo);
 
                                 if (authorInfo != null && !authorInfo.isEmpty()) {
                                     String commitAuthor = (String) authorInfo.get(KEY_TO_LOGIN);
@@ -113,8 +113,7 @@ public class StatisticsService {
                                         String commitUrl = (String) commitInfo.get(KEY_TO_COMMIT_URL);
                                         Map<String, Object> singleCommitInfo = gitHubService.getSingleCommitInfo(commitUrl);
 
-                                        Map<String, Object> stats = (Map<String, Object>) singleCommitInfo.getOrDefault(KEY_TO_COMMIT_CHANGE_SIZE, new HashMap<>());
-                                        int total = (int) stats.getOrDefault(KEY_TO_COMMIT_TOTAL, 0);
+                                        int total = (int) getStatistics(singleCommitInfo).getOrDefault(KEY_TO_COMMIT_TOTAL, 0);
                                         averageCommitSize += total;
                                         numberOfCommits += 1;
                                     }
@@ -160,12 +159,9 @@ public class StatisticsService {
 
                         List<Map<String, Object>> publicRepositoryCommitsFromBaseTime = publicRepositoryCommits.stream()
                                 .filter(commitInfo -> {
-                                    Map<String, Object> authorInfo = (Map<String, Object>) commitInfo.getOrDefault(KEY_TO_AUTHOR, new HashMap<>());
+                                    Map<String, Object> authorInfo = getAuthorInfo(commitInfo);
                                     if (authorInfo != null && !authorInfo.isEmpty()) {
-                                        Map<String, Object> commitInfoForAuthorAndDate = (Map<String, Object>) commitInfo.get(KEY_TO_COMMIT_FOR_DATE);
-                                        Map<String, Object> authorAndDateInfo = (Map<String, Object>) commitInfoForAuthorAndDate.get(KEY_TO_AUTHOR);
-                                        String commitTimeStamp = (String) authorAndDateInfo.get(KEY_TO_DATE);
-                                        Instant commitInstant = Instant.parse(commitTimeStamp);
+                                        Instant commitInstant = getInstant(commitInfo);
 
                                         return commitInstant.isAfter(from);
                                     }
@@ -174,13 +170,10 @@ public class StatisticsService {
                                 .toList();
 
                         for (Map<String, Object> commitInfo : publicRepositoryCommitsFromBaseTime) {
-                            Map<String, Object> authorInfo = (Map<String, Object>) commitInfo.getOrDefault(KEY_TO_AUTHOR, new HashMap<>());
+                            Map<String, Object> authorInfo = getAuthorInfo(commitInfo);
                             if (authorInfo != null && !authorInfo.isEmpty()) {
                                 String commitAuthor = (String) authorInfo.get(KEY_TO_LOGIN);
-                                Map<String, Object> commitInfoForAuthorAndDate = (Map<String, Object>) commitInfo.get(KEY_TO_COMMIT_FOR_DATE);
-                                Map<String, Object> authorAndDateInfo = (Map<String, Object>) commitInfoForAuthorAndDate.get(KEY_TO_AUTHOR);
-                                String commitTimeStamp = (String) authorAndDateInfo.get(KEY_TO_DATE);
-                                Instant commitInstant = Instant.parse(commitTimeStamp);
+                                Instant commitInstant = getInstant(commitInfo);
                                 Instant dayPrecisionInstant = commitInstant.atZone(ZoneOffset.UTC).toLocalDate().atStartOfDay(ZoneOffset.UTC).toInstant();
 
                                 if (user.getGitUserNames().contains(commitAuthor)) {
@@ -190,7 +183,7 @@ public class StatisticsService {
                         }
 
                         for (int dayOffset = 0; dayOffset < 365; dayOffset++) {
-                            Instant currentDate = from.plusSeconds(dayOffset * (long) 86400).atZone(ZoneOffset.UTC).toLocalDate().atStartOfDay(ZoneOffset.UTC).toInstant();
+                            Instant currentDate = from.plusSeconds(dayOffset * DAY_IN_MILLISECONDS).atZone(ZoneOffset.UTC).toLocalDate().atStartOfDay(ZoneOffset.UTC).toInstant();
                             int dayOfWeek = currentDate.atZone(ZoneId.systemDefault()).getDayOfWeek().getValue() % 7;
                             int weekOfYear = (startWeekday + dayOffset) / 7;
                             Integer commitCount = dailyCommitCounts.getOrDefault(currentDate, 0);
@@ -204,7 +197,7 @@ public class StatisticsService {
                         }
 
                         // Adding empty tiles at the end to fill the row
-                        Instant lastDate = from.plusSeconds(365 * (long) 86400).atZone(ZoneOffset.UTC).toLocalDate().atStartOfDay(ZoneOffset.UTC).toInstant();
+                        Instant lastDate = from.plusSeconds(365 * DAY_IN_MILLISECONDS).atZone(ZoneOffset.UTC).toLocalDate().atStartOfDay(ZoneOffset.UTC).toInstant();
                         int lastWeekday = lastDate.atZone(ZoneId.systemDefault()).getDayOfWeek().getValue() % 7;
                         int remainingDays = 6 - lastWeekday;
                         for (int i = 0; i < remainingDays; i++) {
@@ -222,11 +215,26 @@ public class StatisticsService {
             }
 
             default -> {
-//                throw new RuntimeException("Not supported statistic type!");
+                throw new RuntimeException("Not supported statistic type!");
             }
         }
 
         return programmerStatisticsResponse;
+    }
+
+    private static Instant getInstant(Map<String, Object> commitInfo) {
+        Map<String, Object> commitInfoForAuthorAndDate = (Map<String, Object>) commitInfo.get(KEY_TO_COMMIT_FOR_DATE);
+        Map<String, Object> authorAndDateInfo = getAuthorInfo(commitInfoForAuthorAndDate);
+        String commitTimeStamp = (String) authorAndDateInfo.get(KEY_TO_DATE);
+        return Instant.parse(commitTimeStamp);
+    }
+
+    private static Map<String, Object> getAuthorInfo(Map<String, Object> commitInfo) {
+        return (Map<String, Object>) commitInfo.getOrDefault(KEY_TO_AUTHOR, new HashMap<>());
+    }
+
+    private static Map<String, Object> getStatistics(Map<String, Object> singleCommitInfo) {
+        return (Map<String, Object>) singleCommitInfo.getOrDefault(KEY_TO_COMMIT_CHANGE_SIZE, new HashMap<>());
     }
 
     private String getCommitsUrl(String commitsUrl) {
