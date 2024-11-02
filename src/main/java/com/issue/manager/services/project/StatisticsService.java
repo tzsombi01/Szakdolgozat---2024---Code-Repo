@@ -12,6 +12,8 @@ import com.issue.manager.utils.GitHubService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
@@ -119,7 +121,12 @@ public class StatisticsService {
                                 }
                             }
 
-                            averageCommitSizeResponse.setAverageSize(numberOfCommits != 0 ? averageCommitSize / numberOfCommits : 0);
+                            averageCommitSizeResponse.setAverageSize(
+                                    numberOfCommits != 0
+                                            ? BigDecimal.valueOf(averageCommitSize)
+                                                .divide(BigDecimal.valueOf(numberOfCommits), 2, RoundingMode.HALF_UP)
+                                                .doubleValue()
+                                            : 0);
                             statisticsInfos.add(averageCommitSizeResponse);
                         }
                         programmerStatisticsResponse.setStatisticsInfos(statisticsInfos);
@@ -197,7 +204,7 @@ public class StatisticsService {
                         }
 
                         // Adding empty tiles at the end to fill the row
-                        Instant lastDate = from.plusSeconds(365 * 86400).atZone(ZoneOffset.UTC).toLocalDate().atStartOfDay(ZoneOffset.UTC).toInstant();
+                        Instant lastDate = from.plusSeconds(365 * (long) 86400).atZone(ZoneOffset.UTC).toLocalDate().atStartOfDay(ZoneOffset.UTC).toInstant();
                         int lastWeekday = lastDate.atZone(ZoneId.systemDefault()).getDayOfWeek().getValue() % 7;
                         int remainingDays = 6 - lastWeekday;
                         for (int i = 0; i < remainingDays; i++) {
@@ -205,7 +212,7 @@ public class StatisticsService {
                                     "x", (lastWeekday + i + 1) % 7,
                                     "y", 0,
                                     "value", 0,
-                                    "date", 1712102400000L
+                                    "date", 0
                             ));
                         }
 
