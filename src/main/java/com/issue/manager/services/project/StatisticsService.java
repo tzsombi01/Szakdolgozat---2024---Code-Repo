@@ -141,12 +141,11 @@ public class StatisticsService {
                 Long fromTimestamp = programmerStatisticsRequest.getFrom();
                 Instant from = Instant.ofEpochMilli(fromTimestamp);
 
-                Object keyToCommits = publicRepositoryInfo.get(KEY_TO_COMMITS);
+                String keyToCommits = (String) publicRepositoryInfo.get(KEY_TO_COMMITS);
                 if (keyToCommits != null) {
-                    List<Map<String, Object>> publicRepositoryCommits = gitHubService.getAllRepositoryCommits(getCommitsUrl((String) keyToCommits));
+                    List<Map<String, Object>> publicRepositoryCommits = gitHubService.getAllRepositoryCommits(getCommitsUrl(keyToCommits));
 
                     if (publicRepositoryCommits != null) {
-                        int startWeekday = from.atZone(ZoneId.systemDefault()).getDayOfWeek().getValue() % 7;
                         List<Map<String, Object>> structuredData = new ArrayList<>();
 
                         Optional<User> optionalUser = Optional.empty();
@@ -187,6 +186,7 @@ public class StatisticsService {
                             }
                         }
 
+                        int startWeekday = from.atZone(ZoneId.systemDefault()).getDayOfWeek().getValue() % 7;
                         for (int dayOffset = 0; dayOffset < 365; dayOffset++) {
                             Instant currentDate = from.plusSeconds(dayOffset * DAY_IN_MILLISECONDS).atZone(ZoneOffset.UTC).toLocalDate().atStartOfDay(ZoneOffset.UTC).toInstant();
                             int dayOfWeek = currentDate.atZone(ZoneId.systemDefault()).getDayOfWeek().getValue() % 7;
