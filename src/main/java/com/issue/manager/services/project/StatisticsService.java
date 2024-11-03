@@ -138,6 +138,18 @@ public class StatisticsService {
                 }
             }
             case DAILY_COMMITS_FOR_YEAR -> {
+                Optional<User> optionalUser = Optional.empty();
+                if (!programmerStatisticsRequest.getIds().isEmpty()) {
+                    optionalUser = userRepository.findById(programmerStatisticsRequest.getIds().get(0));
+
+                    if (optionalUser.isEmpty()) {
+                        programmerStatisticsResponse.setStatisticsInfos(List.of());
+                        return programmerStatisticsResponse;
+                    }
+                }
+
+                User user = optionalUser.get();
+
                 Long fromTimestamp = programmerStatisticsRequest.getFrom();
                 Instant from = Instant.ofEpochMilli(fromTimestamp);
 
@@ -148,17 +160,6 @@ public class StatisticsService {
                     if (publicRepositoryCommits != null) {
                         List<Map<String, Object>> structuredData = new ArrayList<>();
 
-                        Optional<User> optionalUser = Optional.empty();
-                        if (!programmerStatisticsRequest.getIds().isEmpty()) {
-                            optionalUser = userRepository.findById(programmerStatisticsRequest.getIds().get(0));
-
-                            if (optionalUser.isEmpty()) {
-                                programmerStatisticsResponse.setStatisticsInfos(List.of());
-                                return programmerStatisticsResponse;
-                            }
-                        }
-
-                        User user = optionalUser.get();
                         Map<Instant, Integer> dailyCommitCounts = new HashMap<>();
 
                         List<Map<String, Object>> publicRepositoryCommitsFromBaseTime = publicRepositoryCommits.stream()
