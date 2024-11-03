@@ -51,9 +51,9 @@ public class StatisticsService {
 
         switch(programmerStatisticsRequest.getType()) {
             case COMMITS_PER_PROJECT -> {
-                Object keyToCommits = publicRepositoryInfo.get(KEY_TO_COMMITS);
+                String keyToCommits = (String) publicRepositoryInfo.get(KEY_TO_COMMITS);
                 if (keyToCommits != null) {
-                    List<Map<String, Object>> publicRepositoryCommits = gitHubService.getAllRepositoryCommits(getCommitsUrl((String) keyToCommits));
+                    List<Map<String, Object>> publicRepositoryCommits = gitHubService.getAllRepositoryCommits(getCommitsUrl(keyToCommits));
                     if (publicRepositoryCommits != null) {
                         var statisticsInfos = new ArrayList<>();
 
