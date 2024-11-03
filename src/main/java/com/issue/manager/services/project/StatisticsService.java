@@ -95,6 +95,8 @@ public class StatisticsService {
 
                         List<User> users = userRepository.findAllById(programmerStatisticsRequest.getIds());
 
+                        Map<String, Object> singleCommitInfo = null;
+
                         for (User user : users) {
                             var averageCommitSizeResponse = new ProgrammerStatisticsAverageCommitSizeResponse();
                             averageCommitSizeResponse.setId(user.getId());
@@ -111,7 +113,10 @@ public class StatisticsService {
 
                                     if (user.getGitUserNames().contains(commitAuthor)) {
                                         String commitUrl = (String) commitInfo.get(KEY_TO_COMMIT_URL);
-                                        Map<String, Object> singleCommitInfo = gitHubService.getSingleCommitInfo(commitUrl);
+
+                                        if (singleCommitInfo == null) {
+                                            singleCommitInfo = gitHubService.getSingleCommitInfo(commitUrl);
+                                        }
 
                                         int total = (int) getStatistics(singleCommitInfo).getOrDefault(KEY_TO_COMMIT_TOTAL, 0);
                                         averageCommitSize += total;
