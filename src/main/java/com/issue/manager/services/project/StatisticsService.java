@@ -10,6 +10,7 @@ import com.issue.manager.repositories.base.UserRepository;
 import com.issue.manager.repositories.project.ProjectRepository;
 import com.issue.manager.utils.GitHubService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -49,6 +50,8 @@ public class StatisticsService {
         programmerStatisticsResponse.setIds(programmerStatisticsRequest.getIds());
         programmerStatisticsResponse.setType(programmerStatisticsRequest.getType());
 
+        User loggedInUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
         switch(programmerStatisticsRequest.getType()) {
             case COMMITS_PER_PROJECT -> {
                 String keyToCommits = (String) publicRepositoryInfo.get(KEY_TO_COMMITS);
@@ -87,6 +90,12 @@ public class StatisticsService {
                 }
             }
             case AVERAGE_COMMIT_SIZE -> {
+                if (loggedInUser.getAccessToken() == null || loggedInUser.getAccessToken().isEmpty()) {
+                    programmerStatisticsResponse.setStatisticsInfos(List.of());
+
+                    return programmerStatisticsResponse;
+                }
+
                 Object keyToCommits = publicRepositoryInfo.get(KEY_TO_COMMITS);
                 if (keyToCommits != null) {
                     List<Map<String, Object>> publicRepositoryCommits = gitHubService.getAllRepositoryCommits(getCommitsUrl((String) keyToCommits));
