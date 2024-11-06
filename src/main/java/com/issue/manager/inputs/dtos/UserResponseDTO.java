@@ -14,4 +14,5 @@ public class UserResponseDTO {
     private String lastName;
     private String email;
     private List<String> gitUserNames;
+    private boolean accessToken;
 }

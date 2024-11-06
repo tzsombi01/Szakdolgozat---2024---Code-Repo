@@ -18,6 +18,7 @@ import java.math.RoundingMode;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 @Service
@@ -197,7 +198,8 @@ public class StatisticsService {
                         }
 
                         int startWeekday = from.atZone(ZoneId.systemDefault()).getDayOfWeek().getValue() % 7;
-                        for (int dayOffset = 0; dayOffset < 365; dayOffset++) {
+                        long daysBetween = ChronoUnit.DAYS.between(from.atZone(ZoneOffset.UTC).toLocalDate(), Instant.now().atZone(ZoneOffset.UTC).toLocalDate()) + 1;
+                        for (int dayOffset = 0; dayOffset < daysBetween; dayOffset++) {
                             Instant currentDate = from.plusSeconds(dayOffset * DAY_IN_SECONDS).atZone(ZoneOffset.UTC).toLocalDate().atStartOfDay(ZoneOffset.UTC).toInstant();
                             int dayOfWeek = currentDate.atZone(ZoneId.systemDefault()).getDayOfWeek().getValue() % 7;
                             int weekOfYear = (startWeekday + dayOffset) / 7;
@@ -208,19 +210,6 @@ public class StatisticsService {
                                     "y", 52 - weekOfYear,
                                     "value", commitCount,
                                     "date", currentDate.toEpochMilli()
-                            ));
-                        }
-
-                        // Adding empty tiles at the end to fill the row
-                        Instant lastDate = from.plusSeconds(365 * DAY_IN_SECONDS).atZone(ZoneOffset.UTC).toLocalDate().atStartOfDay(ZoneOffset.UTC).toInstant();
-                        int lastWeekday = lastDate.atZone(ZoneId.systemDefault()).getDayOfWeek().getValue() % 7;
-                        int remainingDays = 6 - lastWeekday;
-                        for (int i = 0; i < remainingDays; i++) {
-                            structuredData.add(Map.of(
-                                    "x", (lastWeekday + i + 1) % 7,
-                                    "y", 0,
-                                    "value", 0,
-                                    "date", 0
                             ));
                         }
 

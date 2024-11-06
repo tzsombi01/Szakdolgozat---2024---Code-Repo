@@ -45,7 +45,8 @@ public class UserService {
                 user.getFirstName(),
                 user.getLastName(),
                 user.getEmail(),
-                user.getGitUserNames()
+                user.getGitUserNames(),
+                user.isAccessTokenSet()
         );
     }
 
@@ -66,7 +67,8 @@ public class UserService {
                 user.getFirstName(),
                 user.getLastName(),
                 user.getEmail(),
-                user.getGitUserNames()
+                user.getGitUserNames(),
+                user.isAccessTokenSet()
         )).toList();
     }
 
