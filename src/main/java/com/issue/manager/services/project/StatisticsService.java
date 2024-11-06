@@ -36,7 +36,7 @@ public class StatisticsService {
     private static final String KEY_TO_AUTHOR = "author";
     private static final String KEY_TO_LOGIN = "login";
     private static final String KEY_TO_COMMIT_URL = "url";
-    private final long DAY_IN_MILLISECONDS = 1000 * 60 * 60 * 24;
+    private final long DAY_IN_SECONDS = 60 * 60 * 24;
 
     public ProgrammerStatisticsResponse getProgrammerStatistics(String id, ProgrammerStatisticsRequest programmerStatisticsRequest) {
         Project project = projectRepository.findById(id)
@@ -198,7 +198,7 @@ public class StatisticsService {
 
                         int startWeekday = from.atZone(ZoneId.systemDefault()).getDayOfWeek().getValue() % 7;
                         for (int dayOffset = 0; dayOffset < 365; dayOffset++) {
-                            Instant currentDate = from.plusSeconds(dayOffset * DAY_IN_MILLISECONDS).atZone(ZoneOffset.UTC).toLocalDate().atStartOfDay(ZoneOffset.UTC).toInstant();
+                            Instant currentDate = from.plusSeconds(dayOffset * DAY_IN_SECONDS).atZone(ZoneOffset.UTC).toLocalDate().atStartOfDay(ZoneOffset.UTC).toInstant();
                             int dayOfWeek = currentDate.atZone(ZoneId.systemDefault()).getDayOfWeek().getValue() % 7;
                             int weekOfYear = (startWeekday + dayOffset) / 7;
                             Integer commitCount = dailyCommitCounts.getOrDefault(currentDate, 0);
@@ -212,7 +212,7 @@ public class StatisticsService {
                         }
 
                         // Adding empty tiles at the end to fill the row
-                        Instant lastDate = from.plusSeconds(365 * DAY_IN_MILLISECONDS).atZone(ZoneOffset.UTC).toLocalDate().atStartOfDay(ZoneOffset.UTC).toInstant();
+                        Instant lastDate = from.plusSeconds(365 * DAY_IN_SECONDS).atZone(ZoneOffset.UTC).toLocalDate().atStartOfDay(ZoneOffset.UTC).toInstant();
                         int lastWeekday = lastDate.atZone(ZoneId.systemDefault()).getDayOfWeek().getValue() % 7;
                         int remainingDays = 6 - lastWeekday;
                         for (int i = 0; i < remainingDays; i++) {
