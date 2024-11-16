@@ -79,7 +79,7 @@ public class TicketControllerTest {
         SecurityContext securityContext = Mockito.mock(SecurityContext.class);
         Authentication authentication = Mockito.mock(Authentication.class);
 
-        Mockito.when(authentication.getPrincipal()).thenReturn(user);
+        Mockito.when(authentication.getPrincipal()).thenReturn(savedUser);
         Mockito.when(securityContext.getAuthentication()).thenReturn(authentication);
         SecurityContextHolder.setContext(securityContext);
 

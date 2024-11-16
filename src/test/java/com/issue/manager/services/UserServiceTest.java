@@ -91,6 +91,7 @@ class UserServiceTest {
         assertThat(invite.getProject()).isEqualTo(savedProject.getId());
         assertThat(invite.getUser()).isEqualTo(savedUser.getId());
     }
+
     @Test
     void canInviteUserToProject_DoesNotExistingInDb() throws Exception {
         // given
