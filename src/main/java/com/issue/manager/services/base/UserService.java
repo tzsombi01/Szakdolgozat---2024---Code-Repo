@@ -121,8 +121,6 @@ public class UserService {
             );
 
             notificationRepository.save(notification);
-
-
         }
     }
 }
